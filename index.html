@@ -1,0 +1,2121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GRM — Girlfriend Relationship Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Cal+Sans&family=Instrument+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080810;
+  --surface:#0f0f1a;
+  --surface2:#161628;
+  --border:rgba(255,255,255,0.07);
+  --border2:rgba(255,255,255,0.12);
+  --text:#f0f0f8;
+  --muted:#8888aa;
+  --muted2:#555577;
+  --pink:#ff4d8f;
+  --pink2:#ff85b3;
+  --purple:#9b5de5;
+  --blue:#4d9fff;
+  --green:#00e676;
+  --amber:#ffb347;
+  --red:#ff4757;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);font-family:'Instrument Sans',sans-serif;color:var(--text);overflow-x:hidden}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ── BG GLOW ── */
+.bg-glow{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 70% 40% at 20% 10%,rgba(255,77,143,0.07) 0%,transparent 60%),
+             radial-gradient(ellipse 50% 30% at 80% 80%,rgba(155,93,229,0.06) 0%,transparent 60%)}
+
+/* ── NAV ── */
+.nav{position:sticky;top:0;z-index:100;background:rgba(8,8,16,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 40px}
+.nav-logo{font-size:20px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px}
+.nav-logo .logo-dot{width:8px;height:8px;border-radius:50%;background:var(--pink)}
+.nav-links{display:flex;align-items:center;gap:28px}
+.nav-links a{font-size:14px;color:var(--muted);text-decoration:none;transition:color 0.15s;cursor:pointer}
+.nav-links a:hover{color:var(--text)}
+.nav-cta{background:var(--pink);color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s}
+.nav-cta:hover{background:#ff2d7a;transform:translateY(-1px)}
+
+/* ── SECTIONS ── */
+section{position:relative;z-index:1}
+.page{display:none}
+.page.active{display:block}
+
+/* ── LANDING ── */
+#landing{min-height:100vh}
+
+.hero{text-align:center;padding:100px 20px 80px;max-width:800px;margin:0 auto}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,77,143,0.1);border:1px solid rgba(255,77,143,0.25);border-radius:20px;padding:6px 16px;font-size:12px;font-weight:500;color:var(--pink);margin-bottom:28px}
+.hero-badge::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--pink)}
+.hero h1{font-size:clamp(44px,7vw,80px);font-weight:700;line-height:1.05;color:#fff;margin-bottom:20px;letter-spacing:-1px}
+.hero h1 .grad{background:linear-gradient(135deg,var(--pink),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{font-size:18px;color:var(--muted);line-height:1.7;max-width:520px;margin:0 auto 40px;font-weight:300}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-primary{background:var(--pink);color:#fff;border:none;border-radius:10px;padding:14px 28px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s}
+.btn-primary:hover{background:#ff2d7a;transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,77,143,0.3)}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border2);border-radius:10px;padding:14px 28px;font-size:15px;font-weight:500;cursor:pointer;font-family:inherit;transition:all 0.15s}
+.btn-ghost:hover{background:var(--surface2);border-color:var(--border2)}
+
+/* Dashboard preview */
+.hero-preview{max-width:900px;margin:60px auto 0;border-radius:16px;overflow:hidden;border:1px solid var(--border);box-shadow:0 40px 80px rgba(0,0,0,0.5)}
+.preview-bar{background:var(--surface);padding:12px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
+.preview-dot{width:10px;height:10px;border-radius:50%}
+.preview-dots{display:flex;gap:6px}
+.preview-title{font-size:12px;color:var(--muted);margin:0 auto}
+.preview-inner{background:var(--surface2);padding:20px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.preview-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px}
+.pc-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.pc-val{font-size:24px;font-weight:700;color:#fff}
+.pc-sub{font-size:11px;color:var(--muted);margin-top:4px}
+.pc-pink .pc-val{color:var(--pink)}
+.pc-purple .pc-val{color:var(--purple)}
+.pc-amber .pc-val{color:var(--amber)}
+.pc-red .pc-val{color:var(--red)}
+
+/* Features */
+.features{padding:80px 40px;max-width:1100px;margin:0 auto}
+.section-label{font-size:11px;font-weight:600;color:var(--pink);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;text-align:center}
+.section-title{font-size:clamp(28px,4vw,44px);font-weight:700;color:#fff;text-align:center;margin-bottom:16px;letter-spacing:-0.5px}
+.section-sub{font-size:16px;color:var(--muted);text-align:center;max-width:480px;margin:0 auto 56px;line-height:1.6}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.feat-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;transition:border-color 0.2s,transform 0.2s}
+.feat-card:hover{border-color:rgba(255,77,143,0.3);transform:translateY(-3px)}
+.feat-icon{font-size:28px;margin-bottom:14px}
+.feat-title{font-size:16px;font-weight:600;color:#fff;margin-bottom:8px}
+.feat-desc{font-size:13px;color:var(--muted);line-height:1.6}
+
+/* Pricing */
+.pricing{padding:80px 40px;max-width:1100px;margin:0 auto}
+.price-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.price-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px 24px;position:relative;transition:all 0.2s}
+.price-card.popular{border-color:var(--pink);background:rgba(255,77,143,0.05)}
+.price-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--pink);color:#fff;font-size:10px;font-weight:700;padding:4px 12px;border-radius:20px;letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
+.price-plan{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.price-amount{font-size:36px;font-weight:700;color:#fff;margin-bottom:4px}
+.price-amount span{font-size:16px;color:var(--muted);font-weight:400}
+.price-desc{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.5}
+.price-features{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
+.price-features li{font-size:13px;color:var(--text);display:flex;align-items:center;gap:8px}
+.price-features li::before{content:'✓';color:var(--pink);font-weight:700;flex-shrink:0}
+.price-btn{width:100%;padding:11px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s;border:1px solid var(--border2);background:transparent;color:var(--text)}
+.price-btn:hover{background:var(--surface2)}
+.price-card.popular .price-btn{background:var(--pink);border-color:var(--pink);color:#fff}
+.price-card.popular .price-btn:hover{background:#ff2d7a}
+
+/* Testimonials / social proof */
+.social{padding:60px 40px;max-width:900px;margin:0 auto;text-align:center}
+.social p{font-size:13px;color:var(--muted);margin-bottom:20px}
+.trust-logos{display:flex;gap:24px;justify-content:center;flex-wrap:wrap}
+.trust-logo{font-size:13px;font-weight:600;color:rgba(255,255,255,0.2);letter-spacing:1px;text-transform:uppercase}
+
+/* Footer */
+.footer{border-top:1px solid var(--border);padding:40px;text-align:center}
+.footer p{font-size:12px;color:var(--muted)}
+.footer span{color:var(--pink)}
+
+/* ── APP ── */
+#app{display:none;min-height:100vh}
+#app.active{display:flex}
+.sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);padding:20px 0;display:flex;flex-direction:column;gap:4px;flex-shrink:0;height:100vh;position:sticky;top:0}
+.sidebar-logo{padding:0 20px 20px;border-bottom:1px solid var(--border);margin-bottom:12px}
+.sidebar-logo .sl{font-size:18px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px}
+.sidebar-logo .sl .dot{width:7px;height:7px;border-radius:50%;background:var(--pink)}
+.sidebar-logo .sl-sub{font-size:10px;color:var(--muted);margin-top:2px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 20px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;transition:all 0.15s;border-radius:0;margin:0 8px;border-radius:8px}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:rgba(255,77,143,0.1);color:var(--pink)}
+.nav-item .ni{font-size:16px;flex-shrink:0}
+.sidebar-bottom{margin-top:auto;padding:16px 16px 0;border-top:1px solid var(--border)}
+.panic-btn{width:100%;background:linear-gradient(135deg,#ff4757,#ff6b81);border:none;border-radius:10px;padding:12px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit;animation:pulse 2s ease-in-out infinite;letter-spacing:0.3px}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,71,87,0.4)}50%{box-shadow:0 0 0 8px rgba(255,71,87,0)}}
+
+.app-main{flex:1;overflow-y:auto;padding:32px}
+.app-view{display:none}
+.app-view.active{display:block;animation:fadeIn 0.25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Page headers */
+.page-header{margin-bottom:28px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.page-header-left h2{font-size:24px;font-weight:700;color:#fff;margin-bottom:4px}
+.page-header-left p{font-size:14px;color:var(--muted)}
+.btn-add{background:var(--pink);color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.15s;display:flex;align-items:center;gap:6px}
+.btn-add:hover{background:#ff2d7a;transform:translateY(-1px)}
+
+/* Metric cards */
+.metrics{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:28px}
+.metric{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px}
+.metric-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.metric-val{font-size:28px;font-weight:700;color:#fff}
+.metric-sub{font-size:11px;color:var(--muted);margin-top:4px}
+.metric.pink .metric-val{color:var(--pink)}
+.metric.purple .metric-val{color:var(--purple)}
+.metric.amber .metric-val{color:var(--amber)}
+.metric.red .metric-val{color:var(--red)}
+.metric.green .metric-val{color:var(--green)}
+
+/* Tables */
+.table-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:20px}
+.table-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.table-title{font-size:15px;font-weight:600;color:#fff}
+table{width:100%;border-collapse:collapse}
+th{padding:12px 20px;text-align:left;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border)}
+td{padding:14px 20px;font-size:13px;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,0.02)}
+
+/* Badges */
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-pink{background:rgba(255,77,143,0.15);color:var(--pink)}
+.badge-purple{background:rgba(155,93,229,0.15);color:var(--purple)}
+.badge-blue{background:rgba(77,159,255,0.15);color:var(--blue)}
+.badge-green{background:rgba(0,230,118,0.15);color:var(--green)}
+.badge-amber{background:rgba(255,179,71,0.15);color:var(--amber)}
+.badge-red{background:rgba(255,71,87,0.15);color:var(--red)}
+.badge-gray{background:rgba(255,255,255,0.08);color:var(--muted)}
+
+/* Mood dots */
+.mood{display:flex;align-items:center;gap:6px;font-size:12px}
+.mood-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.mood-happy .mood-dot{background:var(--green)}
+.mood-neutral .mood-dot{background:var(--blue)}
+.mood-suspicious .mood-dot{background:var(--amber)}
+.mood-angry .mood-dot{background:var(--red)}
+
+/* Risk bar */
+.risk-bar{height:5px;border-radius:3px;background:rgba(255,255,255,0.08);width:80px;overflow:hidden}
+.risk-fill{height:100%;border-radius:3px}
+.risk-low .risk-fill{background:var(--green);width:25%}
+.risk-medium .risk-fill{background:var(--amber);width:55%}
+.risk-high .risk-fill{background:var(--red);width:85%}
+
+/* Pipeline */
+.pipeline{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px}
+.pipeline-col{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.pipeline-col-header{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.pch-title{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px}
+.pch-count{font-size:11px;font-weight:600;color:#fff;background:var(--surface2);padding:2px 8px;border-radius:10px}
+.pipeline-cards{padding:10px;display:flex;flex-direction:column;gap:8px;min-height:60px}
+.p-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;cursor:pointer;transition:all 0.15s}
+.p-card:hover{border-color:rgba(255,77,143,0.3);transform:translateY(-1px)}
+.pc-name{font-size:13px;font-weight:600;color:#fff;margin-bottom:4px}
+.pc-platform{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px}
+
+/* Profile modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;display:none}
+.modal-overlay.show{display:flex;animation:fadeIn 0.2s ease}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:20px;width:100%;max-width:600px;max-height:85vh;overflow-y:auto}
+.modal-header{padding:24px 28px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:1}
+.modal-title{font-size:18px;font-weight:700;color:#fff}
+.modal-close{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:6px;transition:all 0.15s}
+.modal-close:hover{background:var(--surface2);color:var(--text)}
+.modal-body{padding:24px 28px}
+
+/* Form elements */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-field{display:flex;flex-direction:column;gap:6px}
+.form-field.full{grid-column:1/-1}
+.form-field label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.form-field input,.form-field select,.form-field textarea{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:14px;color:var(--text);outline:none;font-family:inherit;transition:border-color 0.2s;width:100%}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{border-color:rgba(255,77,143,0.4)}
+.form-field input::placeholder,.form-field textarea::placeholder{color:rgba(255,255,255,0.2)}
+.form-field select option{background:var(--surface)}
+.form-field textarea{height:80px;resize:none;line-height:1.5}
+.form-section{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:20px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--border);grid-column:1/-1}
+.modal-footer{padding:16px 28px 24px;display:flex;gap:10px;justify-content:flex-end}
+.btn-cancel{background:transparent;border:1px solid var(--border2);border-radius:8px;padding:10px 20px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;font-family:inherit;transition:all 0.15s}
+.btn-cancel:hover{background:var(--surface2);color:var(--text)}
+.btn-save{background:var(--pink);border:none;border-radius:8px;padding:10px 24px;font-size:13px;font-weight:600;color:#fff;cursor:pointer;font-family:inherit;transition:all 0.15s}
+.btn-save:hover{background:#ff2d7a}
+
+/* Profile view */
+.profile-hero{background:linear-gradient(135deg,rgba(255,77,143,0.1),rgba(155,93,229,0.1));border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:20px;display:flex;align-items:center;gap:20px}
+.profile-avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--purple));display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;flex-shrink:0}
+.profile-name{font-size:22px;font-weight:700;color:#fff;margin-bottom:4px}
+.profile-nickname{font-size:13px;color:var(--muted)}
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.info-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px}
+.info-card h3{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px}
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:13px}
+.info-row:last-child{border-bottom:none}
+.info-label{color:var(--muted)}
+.info-val{color:var(--text);font-weight:500}
+
+/* Chart area */
+.chart-placeholder{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px}
+.mini-chart{display:flex;align-items:flex-end;gap:6px;height:60px;margin-top:12px}
+.bar{background:rgba(255,77,143,0.3);border-radius:3px 3px 0 0;flex:1;transition:background 0.2s}
+.bar:hover{background:var(--pink)}
+.bar.active{background:var(--pink)}
+
+/* Conflict alert */
+.alert-card{background:rgba(255,71,87,0.08);border:1px solid rgba(255,71,87,0.25);border-radius:12px;padding:18px 20px;display:flex;gap:14px;align-items:flex-start;margin-bottom:14px}
+.alert-icon{font-size:20px;flex-shrink:0;margin-top:1px}
+.alert-title{font-size:14px;font-weight:600;color:var(--red);margin-bottom:4px}
+.alert-desc{font-size:13px;color:var(--muted);line-height:1.5}
+.alert-action{font-size:12px;font-weight:600;color:var(--red);background:rgba(255,71,87,0.12);padding:4px 12px;border-radius:6px;margin-top:8px;display:inline-block;cursor:pointer}
+
+/* Panic mode */
+.panic-container{max-width:700px}
+.panic-header{text-align:center;margin-bottom:32px}
+.panic-header h2{font-size:32px;font-weight:700;color:var(--red);margin-bottom:8px}
+.panic-header p{font-size:15px;color:var(--muted)}
+.panic-options{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
+.panic-opt{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;cursor:pointer;text-align:center;transition:all 0.15s}
+.panic-opt:hover{border-color:rgba(255,71,87,0.4);transform:translateY(-2px)}
+.panic-opt.selected{border-color:var(--red);background:rgba(255,71,87,0.08)}
+.panic-opt-icon{font-size:28px;margin-bottom:8px}
+.panic-opt-title{font-size:13px;font-weight:600;color:#fff;margin-bottom:4px}
+.panic-opt-desc{font-size:11px;color:var(--muted)}
+.panic-select{margin-bottom:20px}
+.panic-select select{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:14px;color:var(--text);outline:none;font-family:inherit;width:100%}
+.panic-select select:focus{border-color:rgba(255,71,87,0.4)}
+.panic-select select option{background:var(--surface)}
+.generate-panic{width:100%;background:linear-gradient(135deg,#ff4757,#ff6b81);border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit;margin-bottom:20px;transition:all 0.15s}
+.generate-panic:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,71,87,0.3)}
+.panic-output{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;display:none}
+.panic-output.show{display:block;animation:fadeIn 0.3s ease}
+.panic-output-label{font-size:11px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px}
+.panic-message{font-size:15px;color:var(--text);line-height:1.7;margin-bottom:16px;padding:16px;background:var(--surface2);border-radius:8px;border-left:3px solid var(--red)}
+.panic-copy{background:transparent;border:1px solid var(--border2);border-radius:7px;padding:8px 16px;font-size:12px;font-weight:600;color:var(--text);cursor:pointer;font-family:inherit;transition:all 0.15s}
+.panic-copy:hover{background:var(--surface2)}
+
+/* Gift tracker */
+.gift-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px;margin-bottom:20px}
+.gift-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;transition:all 0.15s}
+.gift-card:hover{border-color:rgba(255,77,143,0.3)}
+.gift-name{font-size:15px;font-weight:600;color:#fff;margin-bottom:4px}
+.gift-last{font-size:12px;color:var(--muted);margin-bottom:12px}
+.gift-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.gift-item:last-child{border-bottom:none}
+.gift-icon{font-size:16px;flex-shrink:0}
+
+/* Dates */
+.dates-list{display:flex;flex-direction:column;gap:10px}
+.date-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:16px;transition:all 0.15s}
+.date-item:hover{border-color:rgba(255,77,143,0.3)}
+.date-item.urgent{border-color:rgba(255,71,87,0.3);background:rgba(255,71,87,0.05)}
+.date-cal{width:44px;height:44px;border-radius:10px;background:var(--surface2);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border)}
+.date-cal-day{font-size:18px;font-weight:700;color:#fff;line-height:1}
+.date-cal-mon{font-size:9px;color:var(--muted);text-transform:uppercase}
+.date-info{flex:1}
+.date-name{font-size:14px;font-weight:600;color:#fff}
+.date-type{font-size:12px;color:var(--muted);margin-top:2px}
+.date-countdown{font-size:12px;font-weight:600;color:var(--pink)}
+.date-item.urgent .date-countdown{color:var(--red)}
+
+/* Activity feed */
+.activity{display:flex;flex-direction:column;gap:0}
+.activity-item{padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;align-items:center;gap:12px;font-size:13px;color:var(--muted)}
+.activity-item:last-child{border-bottom:none}
+.ai-dot{width:6px;height:6px;border-radius:50%;background:var(--pink);flex-shrink:0}
+.ai-text span{color:var(--text);font-weight:500}
+.ai-time{margin-left:auto;font-size:11px;white-space:nowrap}
+
+/* Drama index */
+.drama-meter{height:8px;border-radius:4px;background:rgba(255,255,255,0.08);overflow:hidden;margin:8px 0}
+.drama-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--green),var(--amber),var(--red));transition:width 0.5s ease}
+
+/* Empty state */
+.empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty-icon{font-size:40px;margin-bottom:12px;opacity:0.4}
+.empty-title{font-size:16px;font-weight:600;color:var(--muted2);margin-bottom:6px}
+.empty-sub{font-size:13px;line-height:1.5}
+
+/* Notes */
+.notes-area{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;min-height:100px;font-size:13px;color:var(--text);line-height:1.7;white-space:pre-wrap;cursor:text}
+
+/* Social icons */
+.social-icons{display:flex;gap:8px;flex-wrap:wrap}
+.soc-icon{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer}
+.soc-ig{background:rgba(225,48,108,0.15);color:#e1306c}
+.soc-wa{background:rgba(37,211,102,0.15);color:#25d366}
+.soc-sc{background:rgba(255,252,0,0.1);color:#fffc00}
+.soc-tg{background:rgba(0,136,204,0.15);color:#0088cc}
+.soc-im{background:rgba(77,159,255,0.1);color:var(--blue)}
+
+/* ── PREVIEW CAPTION ── */
+.preview-caption{text-align:center;font-size:12px;color:var(--muted);padding:12px 16px;border-top:1px solid var(--border);background:var(--surface)}
+
+/* ── TRUSTED BY ── */
+.trusted-section{padding:48px 40px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);text-align:center;background:rgba(255,255,255,0.01)}
+.trusted-label{font-size:12px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:20px}
+.trusted-chips{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.trusted-chip{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:7px 16px;font-size:12px;font-weight:500;color:var(--muted);white-space:nowrap;transition:all 0.15s}
+.trusted-chip:hover{border-color:rgba(255,77,143,0.3);color:var(--text)}
+
+/* ── WHY SECTION ── */
+.why-section{padding:80px 40px;max-width:1100px;margin:0 auto}
+.why-inner{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.why-title{font-size:clamp(28px,4vw,44px);font-weight:700;color:#fff;line-height:1.15;margin-bottom:28px;letter-spacing:-0.5px}
+.why-metrics{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
+.why-metric{font-size:15px;font-weight:500;color:var(--text);display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--surface);border:1px solid var(--border);border-radius:10px}
+.why-but{font-size:16px;color:var(--muted);margin-bottom:6px;font-style:italic}
+.why-chaos{font-size:36px;font-weight:700;background:linear-gradient(135deg,var(--red),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.why-problem-list{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.why-problem{display:flex;align-items:center;gap:12px;font-size:15px;color:var(--muted);padding:12px 16px;background:rgba(255,71,87,0.05);border:1px solid rgba(255,71,87,0.15);border-radius:10px}
+.wp-icon{font-size:16px;flex-shrink:0}
+.why-solution{background:linear-gradient(135deg,rgba(255,77,143,0.08),rgba(155,93,229,0.08));border:1px solid rgba(255,77,143,0.2);border-radius:14px;padding:20px 24px;font-size:15px;color:var(--muted);line-height:1.7}
+
+/* ── ANALYTICS ── */
+.analytics-section{padding:80px 40px;max-width:1100px;margin:0 auto}
+.analytics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.analytics-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;transition:all 0.2s;position:relative;overflow:hidden}
+.analytics-card::before{content:'';position:absolute;top:0;right:0;width:60px;height:60px;background:radial-gradient(circle,rgba(255,77,143,0.08),transparent 70%);pointer-events:none}
+.analytics-card:hover{border-color:rgba(255,77,143,0.25);transform:translateY(-2px)}
+.ac-icon{font-size:26px;margin-bottom:12px}
+.ac-title{font-size:15px;font-weight:600;color:#fff;margin-bottom:8px}
+.ac-desc{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:16px}
+.ac-stat{display:flex;align-items:baseline;gap:8px;padding-top:14px;border-top:1px solid var(--border)}
+.ac-val{font-size:22px;font-weight:700;color:#fff}
+.ac-val.ac-pink{color:var(--pink)}
+.ac-val.ac-purple{color:var(--purple)}
+.ac-val.ac-green{color:var(--green)}
+.ac-val.ac-amber{color:var(--amber)}
+.ac-val.ac-red{color:var(--red)}
+.ac-label{font-size:11px;color:var(--muted)}
+
+/* ── TESTIMONIALS ── */
+.testimonials-section{padding:80px 40px;max-width:1100px;margin:0 auto}
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.testi-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:16px;transition:all 0.2s}
+.testi-card:hover{border-color:rgba(255,77,143,0.25);transform:translateY(-2px)}
+.testi-stars{color:var(--amber);font-size:14px;letter-spacing:2px}
+.testi-quote{font-size:14px;color:var(--text);line-height:1.75;font-style:italic;flex:1}
+.testi-author{display:flex;align-items:center;gap:12px;padding-top:14px;border-top:1px solid var(--border)}
+.testi-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--purple));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.testi-name{font-size:13px;font-weight:600;color:#fff}
+.testi-role{font-size:11px;color:var(--muted);margin-top:1px}
+
+/* ── FAQ ── */
+.faq-section{padding:80px 40px;max-width:700px;margin:0 auto}
+.faq-section .section-title{text-align:center;margin-bottom:40px}
+.faq-list{display:flex;flex-direction:column;gap:8px}
+.faq-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:border-color 0.15s}
+.faq-item:hover{border-color:rgba(255,77,143,0.25)}
+.faq-item.open{border-color:rgba(255,77,143,0.3)}
+.faq-q{padding:18px 20px;display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:500;color:#fff}
+.faq-arrow{color:var(--muted);transition:transform 0.2s;font-style:normal;flex-shrink:0}
+.faq-item.open .faq-arrow{transform:rotate(180deg);color:var(--pink)}
+.faq-a{display:none;padding:0 20px 18px;font-size:13px;color:var(--muted);line-height:1.7;border-top:1px solid var(--border);padding-top:14px}
+.faq-item.open .faq-a{display:block}
+
+/* ── FINAL CTA ── */
+.final-cta{padding:100px 40px;text-align:center;position:relative;overflow:hidden}
+.final-cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 50% 50%,rgba(255,77,143,0.08),transparent 70%);pointer-events:none}
+.fcta-inner{position:relative;z-index:1;max-width:600px;margin:0 auto}
+.fcta-badge{display:inline-block;background:rgba(255,77,143,0.1);border:1px solid rgba(255,77,143,0.25);border-radius:20px;padding:6px 16px;font-size:12px;font-weight:500;color:var(--pink);margin-bottom:24px;letter-spacing:0.5px}
+.fcta-title{font-size:clamp(28px,3.5vw,44px);font-weight:700;color:#fff;line-height:1.2;margin-bottom:16px;letter-spacing:-0.5px;white-space:nowrap}
+.fcta-sub{font-size:18px;color:var(--muted);margin-bottom:32px;line-height:1.8}
+
+/* ── FOOTER ── */
+.footer{border-top:1px solid var(--border);padding:40px}
+.footer-inner{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center}
+.footer-logo{font-size:18px;font-weight:700;color:#fff;display:flex;align-items:center;gap:8px}
+.footer-links{display:flex;gap:24px;flex-wrap:wrap;justify-content:center}
+.footer-links a{font-size:13px;color:var(--muted);text-decoration:none;cursor:pointer;transition:color 0.15s}
+.footer-links a:hover{color:var(--text)}
+.footer-copy{font-size:12px;color:var(--muted);line-height:1.7;max-width:600px}
+
+/* ── SMOOTH SCROLL OFFSET ── */
+[id]{scroll-margin-top:80px}
+
+/* ── AUTH PAGES ── */
+#auth{display:none;min-height:100vh;align-items:center;justify-content:center;padding:20px;position:relative;z-index:1}
+#auth.active{display:flex}
+.auth-wrap{width:100%;max-width:440px}
+.auth-logo{text-align:center;margin-bottom:32px}
+.auth-logo-mark{display:inline-flex;align-items:center;gap:10px;font-size:22px;font-weight:700;color:#fff}
+.auth-logo-dot{width:9px;height:9px;border-radius:50%;background:var(--pink)}
+.auth-card{background:var(--surface);border:1px solid var(--border2);border-radius:20px;overflow:hidden}
+.auth-tabs{display:flex;border-bottom:1px solid var(--border)}
+.auth-tab{flex:1;padding:16px;text-align:center;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;transition:all 0.15s;background:none;border:none;font-family:inherit}
+.auth-tab.active{color:var(--pink);background:rgba(255,77,143,0.05);border-bottom:2px solid var(--pink)}
+.auth-body{padding:32px}
+.auth-title{font-size:22px;font-weight:700;color:#fff;margin-bottom:6px}
+.auth-sub{font-size:13px;color:var(--muted);margin-bottom:28px;line-height:1.5}
+.auth-fields{display:flex;flex-direction:column;gap:16px;margin-bottom:8px}
+.auth-field{display:flex;flex-direction:column;gap:7px}
+.auth-field label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.auth-field input{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:13px 16px;font-size:14px;color:var(--text);outline:none;font-family:inherit;transition:border-color 0.2s,box-shadow 0.2s;width:100%}
+.auth-field input:focus{border-color:rgba(255,77,143,0.5);box-shadow:0 0 0 3px rgba(255,77,143,0.08)}
+.auth-field input::placeholder{color:rgba(255,255,255,0.2)}
+.auth-row{display:flex;align-items:center;justify-content:space-between;margin:4px 0 20px}
+.auth-remember{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--muted);cursor:pointer}
+.auth-remember input{width:14px;height:14px;accent-color:var(--pink);cursor:pointer}
+.auth-forgot{font-size:13px;color:var(--pink);cursor:pointer;background:none;border:none;font-family:inherit;transition:opacity 0.15s}
+.auth-forgot:hover{opacity:0.8;text-decoration:underline}
+.auth-submit{width:100%;background:linear-gradient(135deg,var(--pink),#ff85b3);border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit;transition:all 0.15s;letter-spacing:0.2px;margin-bottom:20px}
+.auth-submit:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(255,77,143,0.3)}
+.auth-submit:active{transform:scale(0.98)}
+.auth-divider{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.auth-divider span{font-size:11px;color:var(--muted);white-space:nowrap}
+.auth-social{display:flex;flex-direction:column;gap:10px}
+.auth-social-btn{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px;font-size:14px;font-weight:500;color:var(--text);cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:10px;transition:all 0.15s}
+.auth-social-btn:hover{border-color:var(--border2);background:rgba(255,255,255,0.05)}
+.auth-switch{text-align:center;font-size:13px;color:var(--muted);margin-top:20px}
+.auth-switch a{color:var(--pink);cursor:pointer;font-weight:500;text-decoration:none}
+.auth-switch a:hover{text-decoration:underline}
+.auth-error{background:rgba(255,71,87,0.1);border:1px solid rgba(255,71,87,0.3);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:16px;display:none}
+.auth-success{background:rgba(0,230,118,0.1);border:1px solid rgba(0,230,118,0.3);border-radius:8px;padding:10px 14px;font-size:13px;color:var(--green);margin-bottom:16px;display:none}
+.auth-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer;margin-bottom:24px;background:none;border:none;font-family:inherit;transition:color 0.15s;padding:0}
+.auth-back:hover{color:var(--text)}
+.auth-strength{height:3px;border-radius:2px;background:var(--border);margin-top:6px;overflow:hidden}
+.auth-strength-fill{height:100%;border-radius:2px;transition:width 0.3s,background 0.3s;width:0%}
+.auth-strength-label{font-size:10px;color:var(--muted);margin-top:4px}
+.pw-toggle{position:relative}
+.pw-toggle input{padding-right:44px}
+.pw-eye{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:0;line-height:1}
+
+/* ── NOTIFICATION BELL ── */
+.notif-wrap{position:relative}
+.notif-bell{background:var(--surface2);border:1px solid var(--border);border-radius:8px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all 0.15s;position:relative}
+.notif-bell:hover{border-color:var(--border2);background:rgba(255,255,255,0.06)}
+.notif-badge{position:absolute;top:-5px;right:-5px;background:var(--red);color:#fff;font-size:9px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 4px;border:1.5px solid var(--bg)}
+.notif-dropdown{position:absolute;top:calc(100% + 8px);right:0;width:320px;background:var(--surface);border:1px solid var(--border2);border-radius:14px;box-shadow:0 16px 40px rgba(0,0,0,0.4);z-index:200;display:none;overflow:hidden}
+.notif-dropdown.open{display:block;animation:fadeIn 0.18s ease}
+.notif-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.notif-header-title{font-size:13px;font-weight:600;color:#fff}
+.notif-mark-all{font-size:11px;color:var(--pink);cursor:pointer;background:none;border:none;font-family:inherit;transition:opacity 0.15s}
+.notif-mark-all:hover{opacity:0.7;text-decoration:underline}
+.notif-list{max-height:340px;overflow-y:auto}
+.notif-item{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:10px;align-items:flex-start;cursor:pointer;transition:background 0.12s}
+.notif-item:hover{background:rgba(255,255,255,0.03)}
+.notif-item.unread{background:rgba(255,77,143,0.04)}
+.notif-item:last-child{border-bottom:none}
+.notif-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.notif-content{flex:1}
+.notif-text{font-size:12px;color:var(--text);line-height:1.5;margin-bottom:3px}
+.notif-action{font-size:11px;color:var(--pink);font-weight:500}
+.notif-time{font-size:10px;color:var(--muted);margin-top:2px}
+.notif-unread-dot{width:6px;height:6px;border-radius:50%;background:var(--pink);flex-shrink:0;margin-top:5px}
+.notif-empty{padding:28px 16px;text-align:center;font-size:13px;color:var(--muted)}
+
+/* ── SUSPICION AI CARD ── */
+.suspicion-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px}
+.suspicion-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.suspicion-title{font-size:15px;font-weight:600;color:#fff;display:flex;align-items:center;gap:8px}
+.suspicion-title-icon{font-size:18px}
+.suspicion-level{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:0.5px}
+.sl-high{background:rgba(255,71,87,0.15);color:var(--red);border:1px solid rgba(255,71,87,0.3)}
+.sl-medium{background:rgba(255,179,71,0.15);color:var(--amber);border:1px solid rgba(255,179,71,0.3)}
+.sl-low{background:rgba(0,230,118,0.15);color:var(--green);border:1px solid rgba(0,230,118,0.3)}
+.suspicion-signals{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.suspicion-signal{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);padding:6px 10px;background:var(--surface2);border-radius:7px}
+.ss-dot{width:5px;height:5px;border-radius:50%;background:var(--red);flex-shrink:0}
+.suspicion-rec{background:rgba(255,71,87,0.06);border:1px solid rgba(255,71,87,0.15);border-radius:8px;padding:10px 12px}
+.suspicion-rec-label{font-size:10px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.suspicion-rec-text{font-size:12px;color:var(--text);line-height:1.5}
+
+/* ── RELATIONSHIP HEALTH METER ── */
+.health-meter-wrap{padding:14px 16px;background:var(--surface2);border-radius:10px;margin-top:6px}
+.health-meter-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.health-meter-label{font-size:12px;font-weight:500;color:var(--muted)}
+.health-meter-val{font-size:14px;font-weight:700}
+.health-bar{height:6px;border-radius:3px;background:rgba(255,255,255,0.08);overflow:hidden}
+.health-bar-fill{height:100%;border-radius:3px;transition:width 0.6s ease}
+.health-status{font-size:11px;margin-top:5px;font-weight:500}
+
+/* ── TIMELINE ── */
+.timeline-section{margin-top:0}
+.timeline-list{display:flex;flex-direction:column;gap:0;position:relative;padding-left:20px}
+.timeline-list::before{content:'';position:absolute;left:6px;top:8px;bottom:8px;width:1px;background:var(--border)}
+.timeline-item{position:relative;padding:0 0 16px 16px;font-size:13px;color:var(--muted);line-height:1.5}
+.timeline-item:last-child{padding-bottom:0}
+.timeline-dot{position:absolute;left:-14px;top:4px;width:8px;height:8px;border-radius:50%;background:var(--surface2);border:1.5px solid var(--border2);flex-shrink:0}
+.timeline-date{font-size:11px;font-weight:600;color:var(--pink);margin-bottom:2px}
+.timeline-text{color:var(--text);font-size:12px}
+
+/* ── PRODUCT HUNT BADGE ── */
+.ph-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:8px 14px;font-family:inherit;text-decoration:none;transition:all 0.15s;cursor:default}
+.ph-badge:hover{border-color:rgba(255,255,255,0.18);background:rgba(255,255,255,0.07)}
+.ph-badge-left{display:flex;flex-direction:column;align-items:center;justify-content:center;width:32px;height:32px;background:#da552f;border-radius:7px;flex-shrink:0}
+.ph-badge-arrow{color:#fff;font-size:12px;line-height:1}
+.ph-badge-count{color:#fff;font-size:9px;font-weight:700;line-height:1}
+.ph-badge-right{display:flex;flex-direction:column}
+.ph-badge-top{font-size:9px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;line-height:1.2}
+.ph-badge-name{font-size:12px;font-weight:600;color:#fff;line-height:1.3}
+
+/* App header user area */
+.app-header{display:flex;align-items:center;justify-content:space-between;padding:14px 32px;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
+.app-header-left{display:flex;align-items:center;gap:8px}
+.app-header-logo{font-size:16px;font-weight:700;color:#fff;display:flex;align-items:center;gap:7px;cursor:pointer}
+.app-header-logo .dot{width:7px;height:7px;border-radius:50%;background:var(--pink)}
+.app-user{display:flex;align-items:center;gap:10px}
+.app-user-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--purple));display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff}
+.app-user-name{font-size:13px;font-weight:500;color:var(--text)}
+.app-user-email{font-size:11px;color:var(--muted)}
+.app-logout{background:rgba(255,71,87,0.1);border:1px solid rgba(255,71,87,0.2);border-radius:7px;padding:6px 12px;font-size:12px;font-weight:600;color:var(--red);cursor:pointer;font-family:inherit;transition:all 0.15s;margin-left:8px}
+.app-logout:hover{background:rgba(255,71,87,0.2)}
+
+/* Responsive */
+@media(max-width:900px){
+  .analytics-grid{grid-template-columns:1fr 1fr}
+  .testi-grid{grid-template-columns:1fr}
+  .why-inner{grid-template-columns:1fr;gap:32px}
+  .feat-grid{grid-template-columns:1fr 1fr}
+  .price-grid{grid-template-columns:1fr 1fr}
+  .pipeline{grid-template-columns:1fr 1fr}
+  .profile-grid{grid-template-columns:1fr}
+  .form-grid{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .hero{padding:60px 16px 40px}
+  .nav{padding:0 16px}
+  .features,.pricing{padding:60px 16px}
+  .preview-inner{grid-template-columns:1fr 1fr}
+  .feat-grid{grid-template-columns:1fr}
+  .price-grid{grid-template-columns:1fr}
+  .pipeline{grid-template-columns:1fr}
+  .metrics{grid-template-columns:1fr 1fr}
+  .panic-options{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div class="bg-glow"></div>
+
+<!-- ── LANDING PAGE ── -->
+<div id="landing" class="page active">
+  <nav class="nav">
+    <div class="nav-logo"><div class="logo-dot"></div>GRM</div>
+    <div class="nav-links">
+      <a onclick="document.getElementById('features-section').scrollIntoView({behavior:'smooth'})">Features</a>
+      <a onclick="document.getElementById('pricing-section').scrollIntoView({behavior:'smooth'})">Pricing</a>
+      <a onclick="document.getElementById('about-section').scrollIntoView({behavior:'smooth'})">About</a>
+    </div>
+    <button class="nav-cta" onclick="openApp()">Open Dashboard →</button>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-badge">Now in public beta · No judgment</div>
+    <div style="margin-bottom:20px">
+      <div class="ph-badge">
+        <div class="ph-badge-left"><div class="ph-badge-arrow">▲</div><div class="ph-badge-count">847</div></div>
+        <div class="ph-badge-right"><div class="ph-badge-top">🔥 #1 Product of the Day</div><div class="ph-badge-name">Product Hunt</div></div>
+      </div>
+    </div>
+    <h1>The <span class="grad">Relationship OS</span><br>for modern founders</h1>
+    <p>Manage your romantic pipeline with the same rigour you apply to your startup. Finally, a CRM built for the most complex stakeholders in your life.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="openApp()">Start Managing Relationships</button>
+      <button class="btn-ghost" onclick="document.getElementById('features-section').scrollIntoView({behavior:'smooth'})">See Features</button>
+    </div>
+    <div class="hero-preview">
+      <div class="preview-bar">
+        <div class="preview-dots">
+          <div class="preview-dot" style="background:#ff5f57"></div>
+          <div class="preview-dot" style="background:#febc2e"></div>
+          <div class="preview-dot" style="background:#28c840"></div>
+        </div>
+        <div class="preview-title">GRM Dashboard — Overview</div>
+      </div>
+      <div class="preview-inner">
+        <div class="preview-card pc-pink"><div class="pc-label">Active Girlfriends</div><div class="pc-val">2</div><div class="pc-sub">↑ 1 this month</div></div>
+        <div class="preview-card pc-purple"><div class="pc-label">In Pipeline</div><div class="pc-val">4</div><div class="pc-sub">2 in talking stage</div></div>
+        <div class="preview-card pc-amber"><div class="pc-label">Drama Index</div><div class="pc-val">Med</div><div class="pc-sub">↓ improving</div></div>
+        <div class="preview-card pc-red"><div class="pc-label">High Risk</div><div class="pc-val">1</div><div class="pc-sub">⚠ attention required</div></div>
+      </div>
+      <div class="preview-caption">The GRM dashboard. Where relationship chaos becomes structured data.</div>
+    </div>
+  </section>
+
+  <!-- TRUSTED BY -->
+  <section class="trusted-section">
+    <p class="trusted-label">Trusted by operators managing complex relationship stacks</p>
+    <div class="trusted-chips">
+      <span class="trusted-chip">Serial Founders</span>
+      <span class="trusted-chip">VC-backed Operators</span>
+      <span class="trusted-chip">Multi-City Entrepreneurs</span>
+      <span class="trusted-chip">Late-Night Texters</span>
+      <span class="trusted-chip">Emotionally Overcommitted Builders</span>
+      <span class="trusted-chip">People Running Their Dating Life Like A Startup</span>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features" id="features-section">
+    <div class="section-label">Core Features</div>
+    <h2 class="section-title">Everything you need to manage<br>your relationship pipeline.</h2>
+    <p class="section-sub">Built for the modern multi-stakeholder individual. Every tool your relationships deserve.</p>
+    <div class="feat-grid">
+      <div class="feat-card"><div class="feat-icon">🔀</div><div class="feat-title">Relationship Pipeline</div><div class="feat-desc">Kanban-style pipeline from Potential → Talking → Dating → Official. Move contacts through stages like a high-performance operator.</div></div>
+      <div class="feat-card"><div class="feat-icon">📅</div><div class="feat-title">Date Manager</div><div class="feat-desc">Never miss a birthday, anniversary, or first-date-iversary again. Automated reminders and subtle nudges before it's too late.</div></div>
+      <div class="feat-card"><div class="feat-icon">🎁</div><div class="feat-title">Gift Tracker</div><div class="feat-desc">Track every gift you've given. Avoid the catastrophic error of gifting the same flowers twice. We've all been there.</div></div>
+      <div class="feat-card"><div class="feat-icon">🌡️</div><div class="feat-title">Mood Tracker</div><div class="feat-desc">Monitor relationship sentiment in real time. From Happy → Neutral → Suspicious → Angry. Act before it escalates.</div></div>
+      <div class="feat-card"><div class="feat-icon">⚠️</div><div class="feat-title">Conflict Detection</div><div class="feat-desc">Automatically flags scheduling conflicts before they become disasters. Includes location overlap alerts and risk scoring.</div></div>
+      <div class="feat-card"><div class="feat-icon">🚨</div><div class="feat-title">Panic Mode</div><div class="feat-desc">Emergency response system. Generates apology messages, excuses, and gift suggestions instantly. One button. Done.</div></div>
+    </div>
+  </section>
+
+  <!-- WHY GRM EXISTS -->
+  <section class="why-section">
+    <div class="why-inner">
+      <div class="why-left">
+        <div class="section-label" style="text-align:left">Why GRM exists</div>
+        <h2 class="why-title">Modern founders<br>track everything.</h2>
+        <div class="why-metrics">
+          <div class="why-metric">📈 Revenue</div>
+          <div class="why-metric">🚀 Growth</div>
+          <div class="why-metric">🔄 User retention</div>
+          <div class="why-metric">🔥 Burn rate</div>
+        </div>
+        <div class="why-but">But when it comes to relationships?</div>
+        <div class="why-chaos">Chaos.</div>
+      </div>
+      <div class="why-right">
+        <div class="why-problem-list">
+          <div class="why-problem"><span class="wp-icon">❌</span><span>Missed birthdays</span></div>
+          <div class="why-problem"><span class="wp-icon">❌</span><span>Forgotten anniversaries</span></div>
+          <div class="why-problem"><span class="wp-icon">❌</span><span>Scheduling conflicts</span></div>
+          <div class="why-problem"><span class="wp-icon">❌</span><span>Unread messages</span></div>
+        </div>
+        <div class="why-solution">
+          <p>GRM brings <strong style="color:var(--pink)">structure, visibility, and operational discipline</strong> to the most complex system in your life.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ANALYTICS -->
+  <section class="analytics-section" id="analytics-section">
+    <div class="section-label">Relationship Analytics</div>
+    <h2 class="section-title">Track the metrics<br>that actually matter.</h2>
+    <p class="section-sub">Six core KPIs every relationship portfolio needs.</p>
+    <div class="analytics-grid">
+      <div class="analytics-card">
+        <div class="ac-icon">💍</div>
+        <div class="ac-title">Relationship Retention Rate</div>
+        <div class="ac-desc">Measure the long-term health of your relationship portfolio. Know when things are trending down before she does.</div>
+        <div class="ac-stat"><span class="ac-val">94%</span><span class="ac-label">avg retention</span></div>
+      </div>
+      <div class="analytics-card">
+        <div class="ac-icon">🎭</div>
+        <div class="ac-title">Drama Index</div>
+        <div class="ac-desc">Real-time analysis of emotional volatility across all active stakeholders. Aggregate and per-contact.</div>
+        <div class="ac-stat"><span class="ac-val ac-amber">Medium</span><span class="ac-label">current level</span></div>
+      </div>
+      <div class="analytics-card">
+        <div class="ac-icon">⚡</div>
+        <div class="ac-title">Response Time SLA</div>
+        <div class="ac-desc">Monitor how quickly you reply before suspicion levels rise. Your communication velocity, visualised.</div>
+        <div class="ac-stat"><span class="ac-val ac-green">2.4h</span><span class="ac-label">avg response</span></div>
+      </div>
+      <div class="analytics-card">
+        <div class="ac-icon">🎁</div>
+        <div class="ac-title">Gift ROI</div>
+        <div class="ac-desc">Understand which gifts deliver the highest emotional returns. Stop over-investing in low-impact gestures.</div>
+        <div class="ac-stat"><span class="ac-val ac-purple">3.2x</span><span class="ac-label">avg return</span></div>
+      </div>
+      <div class="analytics-card">
+        <div class="ac-icon">⚠️</div>
+        <div class="ac-title">Conflict Alerts</div>
+        <div class="ac-desc">Identify overlapping plans before they become disasters. Location, time, and proximity detection.</div>
+        <div class="ac-stat"><span class="ac-val ac-red">1</span><span class="ac-label">active alert</span></div>
+      </div>
+      <div class="analytics-card">
+        <div class="ac-icon">📉</div>
+        <div class="ac-title">Emotional Churn Rate</div>
+        <div class="ac-desc">Track relationships moving toward Churned status. Early signals so you can intervene before it's too late.</div>
+        <div class="ac-stat"><span class="ac-val ac-green">Low</span><span class="ac-label">this quarter</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="testimonials-section" id="about-section">
+    <div class="section-label">Social Proof</div>
+    <h2 class="section-title">What Founders Are Saying</h2>
+    <div class="testi-grid">
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-quote">"Before GRM, I was running my dating life on spreadsheets. Now everything is organized in one dashboard."</div>
+        <div class="testi-author">
+          <div class="testi-av">AF</div>
+          <div>
+            <div class="testi-name">Anonymous Founder</div>
+            <div class="testi-role">San Francisco, CA</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-quote">"I treat my relationships with the same discipline as my startup. GRM finally gives me the tools to do that."</div>
+        <div class="testi-author">
+          <div class="testi-av" style="background:linear-gradient(135deg,var(--purple),var(--blue))">SF</div>
+          <div>
+            <div class="testi-name">Series A Founder</div>
+            <div class="testi-role">New York, NY</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi-card">
+        <div class="testi-stars">★★★★★</div>
+        <div class="testi-quote">"Panic Mode alone saved me multiple times. I don't want to elaborate but it worked."</div>
+        <div class="testi-author">
+          <div class="testi-av" style="background:linear-gradient(135deg,var(--amber),var(--pink))">PM</div>
+          <div>
+            <div class="testi-name">Product Manager</div>
+            <div class="testi-role">NYC</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="pricing" id="pricing-section">
+    <div class="section-label">Pricing</div>
+    <h2 class="section-title">Scale your relationship portfolio.</h2>
+    <p class="section-sub">Transparent pricing for every stage of your romantic journey.</p>
+    <div class="price-grid">
+      <div class="price-card">
+        <div class="price-plan">Free</div>
+        <div class="price-amount">$0<span>/mo</span></div>
+        <div class="price-desc">For the monogamous minimalist.</div>
+        <ul class="price-features">
+          <li>1 girlfriend</li>
+          <li>Basic profile</li>
+          <li>Birthday reminders</li>
+          <li>Gift tracker</li>
+        </ul>
+        <button class="price-btn" onclick="openApp()">Get Started</button>
+      </div>
+      <div class="price-card popular">
+        <div class="price-badge">Most Popular</div>
+        <div class="price-plan">Pro</div>
+        <div class="price-amount">$19<span>/mo</span></div>
+        <div class="price-desc">For the ambitious multi-stakeholder.</div>
+        <ul class="price-features">
+          <li>Up to 3 girlfriends</li>
+          <li>Full pipeline view</li>
+          <li>Mood tracker</li>
+          <li>Conflict detection</li>
+          <li>Panic Mode</li>
+        </ul>
+        <button class="price-btn" onclick="openApp()">Start Free Trial</button>
+      </div>
+      <div class="price-card">
+        <div class="price-plan">Founder</div>
+        <div class="price-amount">$49<span>/mo</span></div>
+        <div class="price-desc">Unlimited bandwidth. Unlimited stakeholders.</div>
+        <ul class="price-features">
+          <li>Unlimited girlfriends</li>
+          <li>Drama analytics</li>
+          <li>AI excuse generator</li>
+          <li>Priority panic support</li>
+          <li>Export reports</li>
+        </ul>
+        <button class="price-btn" onclick="openApp()">Go Founder</button>
+      </div>
+      <div class="price-card">
+        <div class="price-plan">Enterprise</div>
+        <div class="price-amount">$199<span>/mo</span></div>
+        <div class="price-desc">Multi-city relationship scaling.</div>
+        <ul class="price-features">
+          <li>Unlimited everything</li>
+          <li>Multi-city support</li>
+          <li>Timezone manager</li>
+          <li>Dedicated account manager</li>
+          <li>Custom integrations</li>
+        </ul>
+        <button class="price-btn" onclick="openApp()">Contact Sales</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq-section">
+    <div class="section-label">FAQ</div>
+    <h2 class="section-title">Questions we get asked</h2>
+    <div class="faq-list">
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q"><span>Is GRM a real product?</span><span class="faq-arrow">↓</span></div>
+        <div class="faq-a">Yes. Though we strongly recommend using it responsibly. All data is stored in your browser — nobody else can see your pipeline.</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q"><span>Is this encouraging bad behaviour?</span><span class="faq-arrow">↓</span></div>
+        <div class="faq-a">No. GRM simply provides operational clarity. What you do with that clarity is entirely your responsibility. We are not your therapist.</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q"><span>Can I use GRM for just one relationship?</span><span class="faq-arrow">↓</span></div>
+        <div class="faq-a">Absolutely. The Free plan was built for exactly that. Some of our most loyal users manage exactly one stakeholder and are very happy about it.</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q"><span>Is my data private?</span><span class="faq-arrow">↓</span></div>
+        <div class="faq-a">All relationship data is stored locally in your browser using localStorage. We don't have a server. Nobody is reading your notes. We promise.</div>
+      </div>
+      <div class="faq-item" onclick="toggleFaq(this)">
+        <div class="faq-q"><span>What if someone discovers my dashboard?</span><span class="faq-arrow">↓</span></div>
+        <div class="faq-a">We recommend Panic Mode. Navigate to the dashboard, click the red button, and let our apology generator handle the rest. We've prepared for this scenario.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="final-cta">
+    <div class="fcta-inner">
+      <div class="fcta-badge">Take control of your pipeline</div>
+      <h2 class="fcta-title">Stop running your dating life<br>on memory and guesswork.</h2>
+      <p class="fcta-sub"><span style="color:var(--pink);font-weight:600">Start managing it like a founder.</span></p>
+      <button class="btn-primary" style="font-size:16px;padding:16px 36px" onclick="openApp()">Start Managing Relationships</button>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-logo"><div class="logo-dot"></div>GRM</div>
+      <div class="footer-links">
+        <a onclick="document.getElementById('features-section').scrollIntoView({behavior:'smooth'})">Features</a>
+        <a onclick="document.getElementById('pricing-section').scrollIntoView({behavior:'smooth'})">Pricing</a>
+        <a onclick="document.getElementById('about-section').scrollIntoView({behavior:'smooth'})">About</a>
+        <a onclick="openApp()">Dashboard</a>
+      </div>
+      <p class="footer-copy">© 2025 GRM Inc. · Built with ❤️ and zero moral judgment.<br>GRM is a satire project designed for entertainment. Please use responsibly. Not responsible for relationship outcomes.</p>
+    </div>
+  </footer>
+</div>
+
+<!-- ── APP ── -->
+<div id="app" class="page">
+  <div style="display:flex;flex-direction:column;width:100%;min-height:100vh">
+  <!-- App Top Header -->
+  <div class="app-header">
+    <div class="app-header-left">
+      <div class="app-header-logo" onclick="showLanding()"><div class="dot"></div>GRM</div>
+      <span style="font-size:12px;color:var(--muted);margin-left:4px">Dashboard</span>
+    </div>
+    <div class="app-user">
+      <!-- Notification Bell -->
+      <div class="notif-wrap" id="notif-wrap">
+        <div class="notif-bell" onclick="toggleNotif()" id="notif-bell">
+          🔔
+          <span class="notif-badge" id="notif-badge">4</span>
+        </div>
+        <div class="notif-dropdown" id="notif-dropdown">
+          <div class="notif-header">
+            <span class="notif-header-title">Notifications</span>
+            <button class="notif-mark-all" onclick="markAllRead()">Mark all as read</button>
+          </div>
+          <div class="notif-list" id="notif-list"></div>
+        </div>
+      </div>
+      <div class="app-user-av" id="user-av">?</div>
+      <div>
+        <div class="app-user-name" id="user-name">Loading...</div>
+        <div class="app-user-email" id="user-email"></div>
+      </div>
+      <button class="app-logout" onclick="doLogout()">Sign Out</button>
+    </div>
+  </div>
+  <div style="display:flex;flex:1">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sl"><div class="dot"></div>GRM</div>
+      <div class="sl-sub">Girlfriend Relationship Mgmt</div>
+    </div>
+    <div class="nav-item active" onclick="showView('dashboard',this)"><span class="ni">📊</span>Dashboard</div>
+    <div class="nav-item" onclick="showView('pipeline',this)"><span class="ni">🔀</span>Pipeline</div>
+    <div class="nav-item" onclick="showView('profiles',this)"><span class="ni">👤</span>Profiles</div>
+    <div class="nav-item" onclick="showView('dates',this)"><span class="ni">📅</span>Important Dates</div>
+    <div class="nav-item" onclick="showView('gifts',this)"><span class="ni">🎁</span>Gift Tracker</div>
+    <div class="nav-item" onclick="showView('conflicts',this)"><span class="ni">⚠️</span>Conflicts</div>
+    <div class="sidebar-bottom">
+      <button class="panic-btn" onclick="showView('panic',document.querySelector(\'[onclick*=panic]\'))">🚨 PANIC MODE</button>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="app-main">
+
+    <!-- Dashboard -->
+    <div id="v-dashboard" class="app-view active">
+      <div class="page-header">
+        <div class="page-header-left">
+          <h2>Dashboard</h2>
+          <p>Your relationship portfolio at a glance</p>
+        </div>
+        <button class="btn-add" onclick="openModal('add')">+ Add Contact</button>
+      </div>
+
+      <div class="metrics" id="dash-metrics"></div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+        <div class="table-card">
+          <div class="table-header"><span class="table-title">Active Relationships</span></div>
+          <table>
+            <thead><tr><th>Name</th><th>Status</th><th>Mood</th><th>Risk</th></tr></thead>
+            <tbody id="active-table"></tbody>
+          </table>
+        </div>
+        <div class="table-card">
+          <div class="table-header"><span class="table-title">Recent Activity</span></div>
+          <div style="padding:8px 4px" class="activity" id="activity-feed"></div>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-header">
+          <span class="table-title">Drama Index</span>
+          <span class="badge badge-amber" id="drama-badge">Medium</span>
+        </div>
+        <div style="padding:16px 20px">
+          <div style="font-size:12px;color:var(--muted);margin-bottom:6px">Overall portfolio drama level</div>
+          <div class="drama-meter"><div class="drama-fill" id="drama-fill" style="width:55%"></div></div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:4px"><span>Zen</span><span>Medium</span><span>Code Red</span></div>
+        </div>
+      </div>
+
+      <!-- Suspicion AI Card -->
+      <div class="suspicion-card">
+        <div class="suspicion-header">
+          <div class="suspicion-title"><span class="suspicion-title-icon">🤖</span> Suspicion AI</div>
+          <span class="suspicion-level sl-high" id="suspicion-level-badge">HIGH</span>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px;font-weight:600">Signals Detected</div>
+        <div class="suspicion-signals" id="suspicion-signals">
+          <div class="suspicion-signal"><span class="ss-dot"></span>Late reply pattern — avg response time 4+ hours</div>
+          <div class="suspicion-signal"><span class="ss-dot"></span>Location mismatch — check-in inconsistencies detected</div>
+          <div class="suspicion-signal"><span class="ss-dot"></span>Reduced message frequency — 40% drop this week</div>
+        </div>
+        <div class="suspicion-rec">
+          <div class="suspicion-rec-label">Recommended Action</div>
+          <div class="suspicion-rec-text" id="suspicion-rec-text">Send apology message + schedule dinner this week</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pipeline -->
+    <div id="v-pipeline" class="app-view">
+      <div class="page-header">
+        <div class="page-header-left"><h2>Relationship Pipeline</h2><p>Your romantic funnel, visualised</p></div>
+        <button class="btn-add" onclick="openModal('add')">+ Add Contact</button>
+      </div>
+      <div class="pipeline" id="pipeline-view"></div>
+    </div>
+
+    <!-- Profiles -->
+    <div id="v-profiles" class="app-view">
+      <div class="page-header">
+        <div class="page-header-left"><h2>All Profiles</h2><p>Every stakeholder in your portfolio</p></div>
+        <button class="btn-add" onclick="openModal('add')">+ Add Contact</button>
+      </div>
+      <div class="table-card">
+        <table>
+          <thead><tr><th>Name</th><th>Status</th><th>Platform</th><th>Mood</th><th>Risk Level</th><th>Birthday</th><th>Actions</th></tr></thead>
+          <tbody id="profiles-table"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Dates -->
+    <div id="v-dates" class="app-view">
+      <div class="page-header">
+        <div class="page-header-left"><h2>Important Dates</h2><p>Never miss a critical event again</p></div>
+      </div>
+      <div class="dates-list" id="dates-list"></div>
+    </div>
+
+    <!-- Gifts -->
+    <div id="v-gifts" class="app-view">
+      <div class="page-header">
+        <div class="page-header-left"><h2>Gift Tracker</h2><p>Track gifts to avoid catastrophic repeats</p></div>
+        <button class="btn-add" onclick="openGiftModal()">+ Log Gift</button>
+      </div>
+      <div class="gift-grid" id="gift-grid"></div>
+    </div>
+
+    <!-- Conflicts -->
+    <div id="v-conflicts" class="app-view">
+      <div class="page-header">
+        <div class="page-header-left"><h2>Conflict Detection</h2><p>Scheduling overlaps and location conflicts</p></div>
+      </div>
+      <div id="conflicts-list"></div>
+    </div>
+
+    <!-- Panic Mode -->
+    <div id="v-panic" class="app-view">
+      <div class="panic-container" style="margin:0 auto">
+        <div class="panic-header">
+          <div style="font-size:48px;margin-bottom:12px">🚨</div>
+          <h2>PANIC MODE</h2>
+          <p>Emergency relationship damage control. Activated.</p>
+        </div>
+        <div class="panic-options">
+          <div class="panic-opt selected" id="popt-apology" onclick="selectPanic('apology')">
+            <div class="panic-opt-icon">💌</div>
+            <div class="panic-opt-title">Apology Message</div>
+            <div class="panic-opt-desc">Generate a heartfelt sorry</div>
+          </div>
+          <div class="panic-opt" id="popt-excuse" onclick="selectPanic('excuse')">
+            <div class="panic-opt-icon">🎭</div>
+            <div class="panic-opt-title">Excuse Generator</div>
+            <div class="panic-opt-desc">Craft the perfect alibi</div>
+          </div>
+          <div class="panic-opt" id="popt-gift" onclick="selectPanic('gift')">
+            <div class="panic-opt-icon">🎁</div>
+            <div class="panic-opt-title">Gift Suggestion</div>
+            <div class="panic-opt-desc">Emergency gift ideas</div>
+          </div>
+        </div>
+        <div class="panic-select">
+          <select id="panic-person">
+            <option value="">Select contact...</option>
+          </select>
+        </div>
+        <button class="generate-panic" onclick="generatePanic()">⚡ GENERATE NOW</button>
+        <div class="panic-output" id="panic-output">
+          <div class="panic-output-label" id="panic-out-label">Generated Message</div>
+          <div class="panic-message" id="panic-message"></div>
+          <button class="panic-copy" onclick="copyPanic()">📋 Copy to clipboard</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  </div><!-- end flex row -->
+  </div><!-- end flex col -->
+</div><!-- end #app -->
+<div id="auth" class="page">
+  <div class="auth-wrap">
+    <div class="auth-logo">
+      <div class="auth-logo-mark"><div class="auth-logo-dot"></div>GRM</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:6px">Girlfriend Relationship Management</div>
+    </div>
+
+    <!-- LOGIN VIEW -->
+    <div id="auth-login">
+      <div class="auth-card">
+        <div class="auth-tabs">
+          <button class="auth-tab active" onclick="switchAuth('login')">Sign In</button>
+          <button class="auth-tab" onclick="switchAuth('signup')">Create Account</button>
+        </div>
+        <div class="auth-body">
+          <div class="auth-title">Welcome back</div>
+          <div class="auth-sub">Sign in to your GRM account to access your relationship pipeline.</div>
+          <div class="auth-error" id="login-error"></div>
+          <div class="auth-success" id="login-success"></div>
+          <div class="auth-fields">
+            <div class="auth-field">
+              <label>Email Address</label>
+              <input type="email" id="login-email" placeholder="founder@startup.com" onkeydown="if(event.key==='Enter')doLogin()">
+            </div>
+            <div class="auth-field">
+              <label>Password</label>
+              <div class="pw-toggle" style="position:relative">
+                <input type="password" id="login-pw" placeholder="Your password" onkeydown="if(event.key==='Enter')doLogin()">
+                <button class="pw-eye" onclick="togglePw('login-pw',this)">👁</button>
+              </div>
+            </div>
+          </div>
+          <div class="auth-row">
+            <label class="auth-remember"><input type="checkbox" id="remember-me" checked> Remember me</label>
+            <button class="auth-forgot" onclick="showForgot()">Forgot password?</button>
+          </div>
+          <button class="auth-submit" onclick="doLogin()">Sign In to GRM →</button>
+          <div class="auth-divider"><span>or continue with</span></div>
+          <div class="auth-social">
+            <button class="auth-social-btn" onclick="doGoogleAuth()">
+              <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+              Continue with Google
+            </button>
+            <button class="auth-social-btn" onclick="doGithubAuth()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+              Continue with GitHub
+            </button>
+          </div>
+          <div class="auth-switch">Don't have an account? <a onclick="switchAuth('signup')">Sign up free</a></div>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:20px">
+        <button onclick="showLanding()" style="background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;font-family:inherit">← Back to homepage</button>
+      </div>
+    </div>
+
+    <!-- SIGNUP VIEW -->
+    <div id="auth-signup" style="display:none">
+      <div class="auth-card">
+        <div class="auth-tabs">
+          <button class="auth-tab" onclick="switchAuth('login')">Sign In</button>
+          <button class="auth-tab active" onclick="switchAuth('signup')">Create Account</button>
+        </div>
+        <div class="auth-body">
+          <div class="auth-title">Create your account</div>
+          <div class="auth-sub">Start managing your relationship pipeline in under 60 seconds.</div>
+          <div class="auth-error" id="signup-error"></div>
+          <div class="auth-fields">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div class="auth-field"><label>First Name</label><input type="text" id="signup-fname" placeholder="Alex"></div>
+              <div class="auth-field"><label>Last Name</label><input type="text" id="signup-lname" placeholder="Chen"></div>
+            </div>
+            <div class="auth-field"><label>Email Address</label><input type="email" id="signup-email" placeholder="founder@startup.com"></div>
+            <div class="auth-field">
+              <label>Password</label>
+              <div class="pw-toggle" style="position:relative">
+                <input type="password" id="signup-pw" placeholder="Min. 8 characters" oninput="checkStrength(this.value)">
+                <button class="pw-eye" onclick="togglePw('signup-pw',this)">👁</button>
+              </div>
+              <div class="auth-strength"><div class="auth-strength-fill" id="pw-strength-fill"></div></div>
+              <div class="auth-strength-label" id="pw-strength-label">Enter a password</div>
+            </div>
+            <div class="auth-field"><label>Confirm Password</label>
+              <div class="pw-toggle" style="position:relative">
+                <input type="password" id="signup-pw2" placeholder="Repeat password">
+                <button class="pw-eye" onclick="togglePw('signup-pw2',this)">👁</button>
+              </div>
+            </div>
+            <div class="auth-field"><label>Plan</label>
+              <select id="signup-plan" style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:13px 16px;font-size:14px;color:var(--text);outline:none;font-family:inherit;width:100%">
+                <option value="free">Free — 1 girlfriend</option>
+                <option value="pro" selected>Pro — Up to 3 · $19/mo</option>
+                <option value="founder">Founder — Unlimited · $49/mo</option>
+                <option value="enterprise">Enterprise — Multi-city · $199/mo</option>
+              </select>
+            </div>
+          </div>
+          <div style="margin:16px 0 20px">
+            <label style="display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--muted);cursor:pointer;line-height:1.5">
+              <input type="checkbox" id="signup-terms" style="margin-top:2px;accent-color:var(--pink);flex-shrink:0">
+              I agree to the <span style="color:var(--pink);margin:0 3px">Terms of Service</span> and confirm I will use this responsibly.
+            </label>
+          </div>
+          <button class="auth-submit" onclick="doSignup()">Create My Account →</button>
+          <div class="auth-divider"><span>or continue with</span></div>
+          <div class="auth-social">
+            <button class="auth-social-btn" onclick="doGoogleAuth()">
+              <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+              Continue with Google
+            </button>
+          </div>
+          <div class="auth-switch">Already have an account? <a onclick="switchAuth('login')">Sign in</a></div>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:20px">
+        <button onclick="showLanding()" style="background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;font-family:inherit">← Back to homepage</button>
+      </div>
+    </div>
+
+    <!-- FORGOT PASSWORD VIEW -->
+    <div id="auth-forgot" style="display:none">
+      <button class="auth-back" onclick="switchAuth('login')">← Back to sign in</button>
+      <div class="auth-card">
+        <div class="auth-body">
+          <div class="auth-title">Reset your password</div>
+          <div class="auth-sub">Enter your email address and we'll send you a reset link. (It'll show up right here since this is a demo.)</div>
+          <div class="auth-error" id="forgot-error"></div>
+          <div class="auth-success" id="forgot-success"></div>
+          <div class="auth-fields" style="margin-bottom:24px">
+            <div class="auth-field">
+              <label>Email Address</label>
+              <input type="email" id="forgot-email" placeholder="founder@startup.com">
+            </div>
+          </div>
+          <button class="auth-submit" onclick="doForgot()">Send Reset Link →</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-title">Add New Contact</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-section">Basic Info</div>
+        <div class="form-field"><label>Full Name *</label><input id="f-name" placeholder="e.g. Emma Watson"></div>
+        <div class="form-field"><label>Nickname</label><input id="f-nick" placeholder="e.g. Em, Babe"></div>
+        <div class="form-field full"><label>Status</label>
+          <select id="f-status">
+            <option value="potential">Potential</option>
+            <option value="talking">Talking Stage</option>
+            <option value="dating">Dating</option>
+            <option value="relationship">Relationship</option>
+            <option value="churned">Churned</option>
+          </select>
+        </div>
+
+        <div class="form-section">Important Dates</div>
+        <div class="form-field"><label>Birthday</label><input id="f-bday" type="date"></div>
+        <div class="form-field"><label>Anniversary</label><input id="f-anni" type="date"></div>
+        <div class="form-field"><label>First Date</label><input id="f-first" type="date"></div>
+
+        <div class="form-section">Preferences</div>
+        <div class="form-field"><label>Favourite Food</label><input id="f-food" placeholder="e.g. Sushi"></div>
+        <div class="form-field"><label>Favourite Flowers</label><input id="f-flowers" placeholder="e.g. Roses"></div>
+        <div class="form-field"><label>Favourite Restaurant</label><input id="f-resto" placeholder="e.g. Nobu"></div>
+        <div class="form-field"><label>Primary Platform</label>
+          <select id="f-platform">
+            <option value="Instagram">Instagram</option>
+            <option value="WhatsApp">WhatsApp</option>
+            <option value="iMessage">iMessage</option>
+            <option value="Snapchat">Snapchat</option>
+            <option value="Telegram">Telegram</option>
+          </select>
+        </div>
+
+        <div class="form-section">Status</div>
+        <div class="form-field"><label>Mood</label>
+          <select id="f-mood">
+            <option value="happy">😊 Happy</option>
+            <option value="neutral">😐 Neutral</option>
+            <option value="suspicious">🤨 Suspicious</option>
+            <option value="angry">😠 Angry</option>
+          </select>
+        </div>
+        <div class="form-field"><label>Risk Level</label>
+          <select id="f-risk">
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+
+        <div class="form-section">Notes</div>
+        <div class="form-field full"><label>Personal Notes</label><textarea id="f-notes" placeholder="Dog's name, allergies, favourite movie, best friend's name..."></textarea></div>
+        <div class="form-field full"><label>Last Gift Given</label><input id="f-gift" placeholder="e.g. Flowers — Valentine's Day"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      <button class="btn-save" onclick="saveContact()">Save Contact</button>
+    </div>
+  </div>
+</div>
+
+<!-- Profile View Modal -->
+<div class="modal-overlay" id="profile-modal">
+  <div class="modal" style="max-width:680px">
+    <div class="modal-header">
+      <div class="modal-title">Profile</div>
+      <button class="modal-close" onclick="closeProfileModal()">✕</button>
+    </div>
+    <div class="modal-body" id="profile-modal-body"></div>
+  </div>
+</div>
+
+<!-- Gift Modal -->
+<div class="modal-overlay" id="gift-modal">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-header">
+      <div class="modal-title">Log a Gift</div>
+      <button class="modal-close" onclick="closeGiftModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-field full"><label>For</label>
+          <select id="gf-person"></select>
+        </div>
+        <div class="form-field full"><label>Gift</label><input id="gf-gift" placeholder="e.g. Flowers, Necklace, Dinner"></div>
+        <div class="form-field full"><label>Date</label><input id="gf-date" type="date"></div>
+        <div class="form-field full"><label>Occasion</label><input id="gf-occasion" placeholder="e.g. Birthday, Just Because"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeGiftModal()">Cancel</button>
+      <button class="btn-save" onclick="saveGift()">Save Gift</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA STORE ──
+var contacts = [];
+var gifts = [];
+var editingId = null;
+var panicType = 'apology';
+
+// ── AUTH SYSTEM ──
+var users = JSON.parse(localStorage.getItem('grm_users') || '[]');
+var currentUser = JSON.parse(localStorage.getItem('grm_session') || 'null');
+
+function saveUsers(){ localStorage.setItem('grm_users', JSON.stringify(users)); }
+function saveSession(u){ localStorage.setItem('grm_session', JSON.stringify(u)); currentUser = u; }
+function clearSession(){ localStorage.removeItem('grm_session'); currentUser = null; }
+
+function showPage(id){
+  ['landing','auth','app'].forEach(p=>{
+    var el=document.getElementById(p);
+    el.style.display='none';
+    el.classList.remove('active');
+  });
+  var target=document.getElementById(id);
+  target.classList.add('active');
+  target.style.display=(id==='app')?'block':'flex';
+  if(id==='landing') target.style.display='block';
+}
+
+function showLanding(){ showPage('landing'); }
+function showAuth(mode){ showPage('auth'); switchAuth(mode||'login'); }
+
+function openApp(){
+  if(currentUser){ enterDashboard(); }
+  else { showAuth('login'); }
+}
+
+function enterDashboard(){
+  showPage('app');
+  // Set user info in header
+  document.getElementById('user-av').textContent = currentUser.firstName.charAt(0).toUpperCase()+(currentUser.lastName||'').charAt(0).toUpperCase();
+  document.getElementById('user-name').textContent = currentUser.firstName+' '+(currentUser.lastName||'');
+  document.getElementById('user-email').textContent = currentUser.email;
+  // Load user-specific data
+  var key='grm_contacts_'+currentUser.id;
+  var gkey='grm_gifts_'+currentUser.id;
+  contacts=JSON.parse(localStorage.getItem(key)||'[]');
+  gifts=JSON.parse(localStorage.getItem(gkey)||'[]');
+  if(contacts.length===0){ seedData(currentUser.id); }
+  renderAll();
+}
+
+function seedData(uid){
+  contacts=[
+    {id:1,name:'Emma Clarke',nick:'Em',status:'relationship',bday:'1999-03-15',anni:'2024-06-01',first:'2023-11-20',food:'Sushi',flowers:'Peonies',resto:'Nobu',platform:'iMessage',mood:'happy',risk:'low',notes:'Dog: Luna\nBest friend: Chloe\nFav movie: The Notebook\nAllergic to nuts',gift:'Necklace — Christmas',ts:Date.now()-86400000*40},
+    {id:2,name:'Sarah Ahmed',nick:'Sars',status:'dating',bday:'2000-07-22',anni:'',first:'2024-02-14',food:'Thai food',flowers:'Sunflowers',resto:'Zuma',platform:'WhatsApp',mood:'suspicious',risk:'medium',notes:'Hates pineapple pizza\nLoves hiking\nBest friend: Maya',gift:'Flowers — Feb 14',ts:Date.now()-86400000*15},
+    {id:3,name:'Priya Sharma',nick:'Pri',status:'talking',bday:'2001-11-08',anni:'',first:'',food:'Italian',flowers:'Roses',resto:'',platform:'Instagram',mood:'neutral',risk:'low',notes:'Met at startup event\nFounder too\nLoves dogs',gift:'',ts:Date.now()-86400000*5},
+    {id:4,name:'Zoe Williams',nick:'Zo',status:'potential',bday:'1998-09-30',anni:'',first:'',food:'',flowers:'',resto:'',platform:'Snapchat',mood:'happy',risk:'low',notes:'Met through mutual friends\nLikes art',gift:'',ts:Date.now()-86400000*2},
+    {id:5,name:'Lisa Park',nick:'',status:'churned',bday:'1999-12-25',anni:'',first:'2022-05-10',food:'Korean BBQ',flowers:'Tulips',resto:'',platform:'Instagram',mood:'angry',risk:'high',notes:'Do not contact\nStill follows on IG',gift:'Perfume — Birthday',ts:Date.now()-86400000*180}
+  ];
+  gifts=[
+    {id:1,personId:1,gift:'Necklace',date:'2024-12-25',occasion:'Christmas'},
+    {id:2,personId:1,gift:'Flowers',date:'2024-02-14',occasion:"Valentine's Day"},
+    {id:3,personId:2,gift:'Flowers',date:'2024-02-14',occasion:"Valentine's Day"},
+    {id:4,personId:5,gift:'Perfume',date:'2023-12-25',occasion:'Birthday'},
+  ];
+  save();
+}
+
+function save(){
+  if(!currentUser) return;
+  localStorage.setItem('grm_contacts_'+currentUser.id, JSON.stringify(contacts));
+  localStorage.setItem('grm_gifts_'+currentUser.id, JSON.stringify(gifts));
+}
+
+// Auth UI switching
+function switchAuth(mode){
+  document.getElementById('auth-login').style.display   = mode==='login'   ? 'block':'none';
+  document.getElementById('auth-signup').style.display  = mode==='signup'  ? 'block':'none';
+  document.getElementById('auth-forgot').style.display  = mode==='forgot'  ? 'block':'none';
+}
+function showForgot(){ switchAuth('forgot'); }
+
+// Login
+function doLogin(){
+  var email=document.getElementById('login-email').value.trim().toLowerCase();
+  var pw=document.getElementById('login-pw').value;
+  var err=document.getElementById('login-error');
+  var suc=document.getElementById('login-success');
+  err.style.display='none'; suc.style.display='none';
+  if(!email||!pw){ showErr(err,'Please fill in all fields.'); return; }
+  var user=users.find(u=>u.email===email);
+  if(!user){ showErr(err,'No account found with that email. Please sign up.'); return; }
+  if(user.password!==btoa(pw)){ showErr(err,'Incorrect password. Please try again.'); return; }
+  saveSession(user);
+  suc.textContent='Welcome back, '+user.firstName+'! Redirecting...';
+  suc.style.display='block';
+  setTimeout(()=>enterDashboard(), 800);
+}
+
+// Signup
+function doSignup(){
+  var fname=document.getElementById('signup-fname').value.trim();
+  var lname=document.getElementById('signup-lname').value.trim();
+  var email=document.getElementById('signup-email').value.trim().toLowerCase();
+  var pw=document.getElementById('signup-pw').value;
+  var pw2=document.getElementById('signup-pw2').value;
+  var plan=document.getElementById('signup-plan').value;
+  var terms=document.getElementById('signup-terms').checked;
+  var err=document.getElementById('signup-error');
+  err.style.display='none';
+  if(!fname||!email||!pw){ showErr(err,'Please fill in all required fields.'); return; }
+  if(pw.length<8){ showErr(err,'Password must be at least 8 characters.'); return; }
+  if(pw!==pw2){ showErr(err,'Passwords do not match.'); return; }
+  if(!terms){ showErr(err,'Please accept the terms of service.'); return; }
+  if(users.find(u=>u.email===email)){ showErr(err,'An account with this email already exists. Please sign in.'); return; }
+  var user={id:'u_'+Date.now(),firstName:fname,lastName:lname,email,password:btoa(pw),plan,createdAt:new Date().toISOString()};
+  users.push(user); saveUsers();
+  saveSession(user);
+  setTimeout(()=>enterDashboard(), 400);
+}
+
+// Forgot password
+function doForgot(){
+  var email=document.getElementById('forgot-email').value.trim().toLowerCase();
+  var err=document.getElementById('forgot-error');
+  var suc=document.getElementById('forgot-success');
+  err.style.display='none'; suc.style.display='none';
+  if(!email){ showErr(err,'Please enter your email address.'); return; }
+  var user=users.find(u=>u.email===email);
+  if(!user){ showErr(err,'No account found with that email address.'); return; }
+  suc.textContent='✓ Reset link sent! Your password is: [check the browser console — this is a demo]. In a real app, an email would arrive.';
+  suc.style.display='block';
+  console.log('GRM Demo: Password for',email,'is stored as base64:',user.password,'→ decoded:',atob(user.password));
+}
+
+// Social auth (demo)
+function doGoogleAuth(){
+  var user={id:'google_'+Date.now(),firstName:'Google',lastName:'User',email:'google_user_'+Date.now()+'@gmail.com',password:'',plan:'pro',provider:'google',createdAt:new Date().toISOString()};
+  users.push(user); saveUsers(); saveSession(user); enterDashboard();
+}
+function doGithubAuth(){
+  var user={id:'gh_'+Date.now(),firstName:'GitHub',lastName:'User',email:'github_user_'+Date.now()+'@github.com',password:'',plan:'pro',provider:'github',createdAt:new Date().toISOString()};
+  users.push(user); saveUsers(); saveSession(user); enterDashboard();
+}
+
+// Logout
+function doLogout(){
+  if(!confirm('Sign out of GRM?')) return;
+  clearSession(); contacts=[]; gifts=[];
+  showLanding();
+}
+
+function showErr(el,msg){ el.textContent=msg; el.style.display='block'; }
+
+// Password strength checker
+function checkStrength(pw){
+  var fill=document.getElementById('pw-strength-fill');
+  var label=document.getElementById('pw-strength-label');
+  if(!fill) return;
+  var score=0;
+  if(pw.length>=8) score++;
+  if(/[A-Z]/.test(pw)) score++;
+  if(/[0-9]/.test(pw)) score++;
+  if(/[^A-Za-z0-9]/.test(pw)) score++;
+  var levels=[
+    {w:'0%',c:'transparent',t:'Enter a password'},
+    {w:'25%',c:'var(--red)',t:'Weak — too short'},
+    {w:'50%',c:'var(--amber)',t:'Fair — add numbers or symbols'},
+    {w:'75%',c:'var(--blue)',t:'Good — almost there'},
+    {w:'100%',c:'var(--green)',t:'Strong — nice work'},
+  ];
+  var l=levels[score]||levels[0];
+  fill.style.width=l.w; fill.style.background=l.c;
+  label.textContent=l.t; label.style.color=l.c;
+}
+
+// Toggle password visibility
+function togglePw(inputId, btn){
+  var inp=document.getElementById(inputId);
+  if(inp.type==='password'){ inp.type='text'; btn.textContent='🙈'; }
+  else { inp.type='password'; btn.textContent='👁'; }
+}
+
+// ── ROUTING ──
+function scrollTo(sel){ document.querySelector(sel)?.scrollIntoView({behavior:'smooth'}); }
+
+// ── VIEW SWITCHING ──
+function showView(id,el){
+  document.querySelectorAll('.app-view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('v-'+id).classList.add('active');
+  if(el){el.classList.add('active')}
+  renderView(id);
+}
+
+function renderAll(){
+  renderView('dashboard');
+  populatePanicSelect();
+  populateGiftPersonSelect();
+}
+
+function renderView(id){
+  if(id==='dashboard') renderDashboard();
+  else if(id==='pipeline') renderPipeline();
+  else if(id==='profiles') renderProfiles();
+  else if(id==='dates') renderDates();
+  else if(id==='gifts') renderGifts();
+  else if(id==='conflicts') renderConflicts();
+}
+
+// ── HELPERS ──
+function moodBadge(m){
+  var map={happy:'<span class="mood mood-happy"><span class="mood-dot"></span>Happy</span>',neutral:'<span class="mood mood-neutral"><span class="mood-dot"></span>Neutral</span>',suspicious:'<span class="mood mood-suspicious"><span class="mood-dot"></span>Suspicious</span>',angry:'<span class="mood mood-angry"><span class="mood-dot"></span>Angry</span>'};
+  return map[m]||map.neutral;
+}
+
+function riskBadge(r){
+  var map={low:'<div class="risk-bar risk-low"><div class="risk-fill"></div></div>',medium:'<div class="risk-bar risk-medium"><div class="risk-fill"></div></div>',high:'<div class="risk-bar risk-high"><div class="risk-fill"></div></div>'};
+  return map[r]||map.low;
+}
+
+function statusBadge(s){
+  var map={potential:'<span class="badge badge-gray">Potential</span>',talking:'<span class="badge badge-blue">Talking</span>',dating:'<span class="badge badge-purple">Dating</span>',relationship:'<span class="badge badge-pink">Official</span>',churned:'<span class="badge badge-gray" style="opacity:0.5">Churned</span>'};
+  return map[s]||'';
+}
+
+function platformIcon(p){
+  var map={Instagram:'<span class="soc-icon soc-ig">IG</span>',WhatsApp:'<span class="soc-icon soc-wa">WA</span>',iMessage:'<span class="soc-icon soc-im">iM</span>',Snapchat:'<span class="soc-icon soc-sc">SC</span>',Telegram:'<span class="soc-icon soc-tg">TG</span>'};
+  return map[p]||p;
+}
+
+function daysUntil(dateStr){
+  if(!dateStr) return null;
+  var now=new Date(); var d=new Date(dateStr);
+  d.setFullYear(now.getFullYear());
+  if(d<now) d.setFullYear(now.getFullYear()+1);
+  return Math.ceil((d-now)/(1000*60*60*24));
+}
+
+function formatDate(dateStr){
+  if(!dateStr) return '—';
+  var d=new Date(dateStr);
+  return d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+}
+
+// ── DASHBOARD ──
+function renderDashboard(){
+  var active=contacts.filter(c=>c.status==='relationship'||c.status==='dating');
+  var potential=contacts.filter(c=>c.status==='potential'||c.status==='talking');
+  var highRisk=contacts.filter(c=>c.risk==='high');
+  var upcomingBdays=contacts.filter(c=>{var d=daysUntil(c.bday); return d!==null&&d<=14});
+  var upcomingAnni=contacts.filter(c=>{var d=daysUntil(c.anni); return d!==null&&d<=30});
+  var dramaScore=contacts.reduce((acc,c)=>{
+    return acc+(c.mood==='angry'?30:c.mood==='suspicious'?15:c.mood==='neutral'?5:0)
+      +(c.risk==='high'?25:c.risk==='medium'?10:0);
+  },0);
+  var dramaLevel=dramaScore>60?'High':dramaScore>25?'Medium':'Low';
+  var dramaPct=Math.min(95,dramaScore*1.5);
+
+  document.getElementById('dash-metrics').innerHTML=`
+    <div class="metric pink"><div class="metric-label">Active Girlfriends</div><div class="metric-val">${active.length}</div><div class="metric-sub">${active.filter(c=>c.status==='relationship').length} official</div></div>
+    <div class="metric purple"><div class="metric-label">In Pipeline</div><div class="metric-val">${potential.length}</div><div class="metric-sub">${potential.filter(c=>c.status==='talking').length} in talking stage</div></div>
+    <div class="metric amber"><div class="metric-label">Upcoming Birthdays</div><div class="metric-val">${upcomingBdays.length}</div><div class="metric-sub">Within 14 days</div></div>
+    <div class="metric red"><div class="metric-label">High Risk</div><div class="metric-val">${highRisk.length}</div><div class="metric-sub">Needs attention</div></div>
+    <div class="metric green"><div class="metric-label">Anniversaries</div><div class="metric-val">${upcomingAnni.length}</div><div class="metric-sub">Within 30 days</div></div>
+    <div class="metric"><div class="metric-label">Total Portfolio</div><div class="metric-val">${contacts.filter(c=>c.status!=='churned').length}</div><div class="metric-sub">${contacts.filter(c=>c.status==='churned').length} churned</div></div>
+  `;
+
+  var act=contacts.filter(c=>c.status!=='churned').slice(0,4);
+  document.getElementById('active-table').innerHTML=act.length?act.map(c=>`
+    <tr>
+      <td><strong>${c.name}</strong>${c.nick?'<br><span style="font-size:11px;color:var(--muted)">'+c.nick+'</span>':''}</td>
+      <td>${statusBadge(c.status)}</td>
+      <td>${moodBadge(c.mood)}</td>
+      <td>${riskBadge(c.risk)}</td>
+    </tr>`).join(''):'<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:20px">No active contacts. Add some.</td></tr>';
+
+  document.getElementById('activity-feed').innerHTML=`
+    <div class="activity-item"><div class="ai-dot"></div><div class="ai-text"><span>Emma</span> mood changed to Happy</div><div class="ai-time">2h ago</div></div>
+    <div class="activity-item"><div class="ai-dot"></div><div class="ai-text"><span>Sarah</span> is now Suspicious</div><div class="ai-time">5h ago</div></div>
+    <div class="activity-item"><div class="ai-dot"></div><div class="ai-text"><span>Priya</span> added to pipeline</div><div class="ai-time">1d ago</div></div>
+    <div class="activity-item"><div class="ai-dot"></div><div class="ai-text">Gift logged for <span>Emma</span></div><div class="ai-time">2d ago</div></div>
+    <div class="activity-item"><div class="ai-dot"></div><div class="ai-text"><span>Panic Mode</span> activated</div><div class="ai-time">3d ago</div></div>
+  `;
+
+  document.getElementById('drama-badge').className='badge '+(dramaLevel==='High'?'badge-red':dramaLevel==='Medium'?'badge-amber':'badge-green');
+  document.getElementById('drama-badge').textContent=dramaLevel;
+  document.getElementById('drama-fill').style.width=dramaPct+'%';
+  // Update Suspicion AI + Notifications
+  setTimeout(()=>{ renderSuspicionAI(); renderNotifications(); },50);
+}
+
+// ── PIPELINE ──
+function renderPipeline(){
+  var stages=[
+    {key:'potential',label:'Potential',color:'var(--muted)'},
+    {key:'talking',label:'Talking Stage',color:'var(--blue)'},
+    {key:'dating',label:'Dating',color:'var(--purple)'},
+    {key:'relationship',label:'Official 💍',color:'var(--pink)'},
+    {key:'churned',label:'Churned 💔',color:'var(--muted)'}
+  ];
+  document.getElementById('pipeline-view').innerHTML=stages.map(s=>{
+    var cards=contacts.filter(c=>c.status===s.key);
+    return `<div class="pipeline-col">
+      <div class="pipeline-col-header">
+        <span class="pch-title" style="color:${s.color}">${s.label}</span>
+        <span class="pch-count">${cards.length}</span>
+      </div>
+      <div class="pipeline-cards">
+        ${cards.length?cards.map(c=>`
+          <div class="p-card" onclick="viewProfile(${c.id})">
+            <div class="pc-name">${c.name}</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
+              ${moodBadge(c.mood)}
+              <div class="pc-platform">${platformIcon(c.platform)}</div>
+            </div>
+            ${c.bday&&daysUntil(c.bday)<=14?`<div style="font-size:10px;color:var(--amber);margin-top:6px">🎂 Birthday in ${daysUntil(c.bday)}d</div>`:''}
+          </div>`).join(''):'<div style="padding:10px;font-size:12px;color:var(--muted);text-align:center">Empty</div>'}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── PROFILES ──
+function renderProfiles(){
+  document.getElementById('profiles-table').innerHTML=contacts.length?contacts.map(c=>`
+    <tr>
+      <td><strong>${c.name}</strong>${c.nick?'<br><span style="font-size:11px;color:var(--muted)">${c.nick}</span>':''}</td>
+      <td>${statusBadge(c.status)}</td>
+      <td>${platformIcon(c.platform)}</td>
+      <td>${moodBadge(c.mood)}</td>
+      <td>${riskBadge(c.risk)}</td>
+      <td style="font-size:12px">${formatDate(c.bday)}</td>
+      <td>
+        <button onclick="viewProfile(${c.id})" style="background:rgba(77,159,255,0.1);color:var(--blue);border:none;border-radius:5px;padding:4px 10px;font-size:11px;cursor:pointer;font-family:inherit;margin-right:4px">View</button>
+        <button onclick="editContact(${c.id})" style="background:rgba(255,179,71,0.1);color:var(--amber);border:none;border-radius:5px;padding:4px 10px;font-size:11px;cursor:pointer;font-family:inherit;margin-right:4px">Edit</button>
+        <button onclick="deleteContact(${c.id})" style="background:rgba(255,71,87,0.1);color:var(--red);border:none;border-radius:5px;padding:4px 10px;font-size:11px;cursor:pointer;font-family:inherit">Del</button>
+      </td>
+    </tr>`).join(''):'<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:30px">No contacts yet. Click + Add Contact to get started.</td></tr>';
+}
+
+// ── DATES ──
+function renderDates(){
+  var allDates=[];
+  contacts.forEach(c=>{
+    if(c.bday){var d=daysUntil(c.bday);if(d!==null)allDates.push({name:c.name,type:'Birthday',date:c.bday,days:d,urgent:d<=3})}
+    if(c.anni){var d=daysUntil(c.anni);if(d!==null)allDates.push({name:c.name,type:'Anniversary',date:c.anni,days:d,urgent:d<=7})}
+    if(c.first){var d=daysUntil(c.first);if(d!==null)allDates.push({name:c.name,type:'First Date',date:c.first,days:d,urgent:false})}
+  });
+  allDates.sort((a,b)=>a.days-b.days);
+  document.getElementById('dates-list').innerHTML=allDates.length?allDates.map(d=>{
+    var dd=new Date(d.date); dd.setFullYear(new Date().getFullYear());
+    if(dd<new Date()) dd.setFullYear(new Date().getFullYear()+1);
+    return `<div class="date-item${d.urgent?' urgent':''}">
+      <div class="date-cal">
+        <div class="date-cal-day">${dd.getDate()}</div>
+        <div class="date-cal-mon">${dd.toLocaleString('default',{month:'short'})}</div>
+      </div>
+      <div class="date-info">
+        <div class="date-name">${d.name}'s ${d.type}</div>
+        <div class="date-type">${d.type==='Birthday'?'🎂':d.type==='Anniversary'?'💑':'💝'} ${d.type}</div>
+      </div>
+      <div class="date-countdown">${d.days===0?'TODAY!':d.days===1?'Tomorrow':d.days+' days'}</div>
+    </div>`;
+  }).join(''):`<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">No dates tracked</div><div class="empty-sub">Add contacts with birthdays and anniversaries to see them here.</div></div>`;
+}
+
+// ── GIFTS ──
+function renderGifts(){
+  var peopleWithGifts=contacts.filter(c=>c.status!=='churned');
+  document.getElementById('gift-grid').innerHTML=peopleWithGifts.map(c=>{
+    var giftHistory=gifts.filter(g=>g.personId===c.id);
+    return `<div class="gift-card">
+      <div class="gift-name">${c.name}</div>
+      <div class="gift-last">${giftHistory.length?giftHistory.length+' gift(s) recorded':'No gifts yet'}</div>
+      ${giftHistory.length?giftHistory.slice(-3).reverse().map(g=>`
+        <div class="gift-item">
+          <span class="gift-icon">🎁</span>
+          <div>
+            <div style="font-size:13px;color:var(--text)">${g.gift}</div>
+            <div style="font-size:11px;color:var(--muted)">${g.occasion} · ${formatDate(g.date)}</div>
+          </div>
+        </div>`).join(''):`<div style="font-size:12px;color:var(--muted);padding:8px 0">No gifts logged yet.</div>`}
+    </div>`;
+  }).join('');
+}
+
+// ── CONFLICTS ──
+function renderConflicts(){
+  // Simulated conflicts for demo
+  document.getElementById('conflicts-list').innerHTML=`
+    <div class="alert-card">
+      <div class="alert-icon">⚠️</div>
+      <div>
+        <div class="alert-title">Scheduling Conflict Detected</div>
+        <div class="alert-desc">Emma — Dinner Friday 7:00 PM @ Nobu, Mayfair<br>Sarah — Movie Friday 8:30 PM @ Vue Cinema, Leicester Square<br><strong style="color:var(--red)">Location overlap: 12 min apart. Risk: High.</strong></div>
+        <span class="alert-action">→ Suggest Reschedule</span>
+      </div>
+    </div>
+    <div class="alert-card" style="border-color:rgba(255,179,71,0.25);background:rgba(255,179,71,0.05)">
+      <div class="alert-icon">🎂</div>
+      <div>
+        <div class="alert-title" style="color:var(--amber)">Birthday Alert — Action Required</div>
+        <div class="alert-desc">Emma's birthday is in 3 days (March 15). No gift logged this year.<br>Last gift: Necklace — Christmas 2024.</div>
+        <span class="alert-action" style="color:var(--amber);background:rgba(255,179,71,0.12)" onclick="showView('gifts',null)">→ Log a Gift</span>
+      </div>
+    </div>
+    <div class="alert-card" style="border-color:rgba(155,93,229,0.25);background:rgba(155,93,229,0.05)">
+      <div class="alert-icon">🤨</div>
+      <div>
+        <div class="alert-title" style="color:var(--purple)">Mood Warning</div>
+        <div class="alert-desc">Sarah's mood has been Suspicious for 3+ days. Last contact: 2 days ago.<br>Recommended action: Send a thoughtful message today.</div>
+        <span class="alert-action" style="color:var(--purple);background:rgba(155,93,229,0.12)" onclick="showView('panic',null)">→ Open Panic Mode</span>
+      </div>
+    </div>
+    ${contacts.length===0?'<div class="empty-state"><div class="empty-icon">✅</div><div class="empty-title">No conflicts detected</div><div class="empty-sub">Your schedule is clean. For now.</div></div>':''}
+  `;
+}
+
+// ── PANIC MODE ──
+function selectPanic(type){
+  panicType=type;
+  document.querySelectorAll('.panic-opt').forEach(o=>o.classList.remove('selected'));
+  document.getElementById('popt-'+type).classList.add('selected');
+}
+
+function populatePanicSelect(){
+  var sel=document.getElementById('panic-person');
+  sel.innerHTML='<option value="">Select contact...</option>'+contacts.filter(c=>c.status!=='churned').map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+}
+
+var apologies=[
+  "Hey, I'm so sorry I've been MIA lately. Work has completely taken over my life and I've been terrible at communicating. That's not fair to you and I genuinely feel awful about it. Can we talk tonight? I'll make it up to you, I promise.",
+  "I owe you a proper apology. I know I haven't been showing up the way you deserve and I've been doing a lot of thinking about that. You're important to me and I never want you to feel like an afterthought. I'm sorry.",
+  "Okay I know I messed up. I don't have a great excuse and honestly you deserve better than whatever I just offered. Can we reset? I'd really like to start over and do this right.",
+  "I'm sorry for yesterday. I said something stupid and I've been regretting it since. You didn't deserve that. Can I call you later? I just want to hear your voice and actually apologise properly.",
+];
+var excuses=[
+  "My phone completely died and I left my charger at the office — I only just got it back on. I literally had no way to reach you and I've been worried you'd think I was ignoring you. I wasn't, I promise.",
+  "I got pulled into the most intense work situation this afternoon — I couldn't even look at my phone. My boss basically kidnapped me into a 4-hour emergency meeting. I'm so sorry for the silence.",
+  "My flatmate had some kind of crisis and I ended up being their support system all day. I know that's not an excuse for not texting you back but I genuinely couldn't step away. Are you okay?",
+  "I was in back to back calls from 9am and had my phone on DND the whole time. By the time I saw your message it felt too late to respond normally so I panicked and made it worse by saying nothing. Classic me. I'm sorry.",
+];
+var giftSuggestions=[
+  "Personalised jewellery with her initials — timeless, thoughtful, impossible to regift. Pairs well with a handwritten note explaining why you chose it. Don't just hand over a bag.",
+  "A spa day booking for her and her best friend. Shows you pay attention to her social life. Bonus: you look like you understand she has a world outside of you. Rare energy.",
+  "A dinner reservation at her favourite restaurant, booked in advance with a dietary note for her specific preferences. Show up with flowers. Small bouquet, not funeral sized.",
+  "A custom photo book of your best moments together. Sounds basic. Is never basic when executed well. Use a proper print service, not a phone shop. Presentation is everything.",
+  "An experience she's mentioned wanting to do — exhibition, show, cooking class. The key is: it has to be something she said out loud. If you're guessing, you haven't been listening enough.",
+];
+
+function generatePanic(){
+  var personId=document.getElementById('panic-person').value;
+  var person=contacts.find(c=>c.id==personId);
+  var output=document.getElementById('panic-output');
+  var msg=document.getElementById('panic-message');
+  var lbl=document.getElementById('panic-out-label');
+  var text='';
+  if(panicType==='apology'){
+    text=apologies[Math.floor(Math.random()*apologies.length)];
+    if(person) text=text.replace(/^(Hey|I owe|Okay|I'm sorry for)/,person.nick||person.name.split(' ')[0]+', $&'.replace(/^,\s/,''));
+    lbl.textContent='Generated Apology — Copy & Send';
+  } else if(panicType==='excuse'){
+    text=excuses[Math.floor(Math.random()*excuses.length)];
+    lbl.textContent='Generated Excuse — Send with a straight face';
+  } else {
+    text=giftSuggestions[Math.floor(Math.random()*giftSuggestions.length)];
+    if(person&&person.food) text+='\n\n💡 Based on her profile: she loves '+person.food+'. A reservation at a '+(person.food.toLowerCase())+' restaurant would hit.';
+    lbl.textContent='Gift Suggestion — Act fast';
+  }
+  msg.textContent=text;
+  output.classList.add('show');
+  output.style.display='block';
+}
+
+function copyPanic(){
+  navigator.clipboard.writeText(document.getElementById('panic-message').textContent).then(()=>{
+    var btn=event.target;btn.textContent='✅ Copied!';setTimeout(()=>btn.textContent='📋 Copy to clipboard',2000);
+  });
+}
+
+// ── MODAL ──
+function openModal(mode,id){
+  editingId=id||null;
+  document.getElementById('modal-title').textContent=mode==='edit'?'Edit Contact':'Add New Contact';
+  if(mode==='edit'&&id){
+    var c=contacts.find(x=>x.id===id);
+    if(c){
+      document.getElementById('f-name').value=c.name||'';
+      document.getElementById('f-nick').value=c.nick||'';
+      document.getElementById('f-status').value=c.status||'potential';
+      document.getElementById('f-bday').value=c.bday||'';
+      document.getElementById('f-anni').value=c.anni||'';
+      document.getElementById('f-first').value=c.first||'';
+      document.getElementById('f-food').value=c.food||'';
+      document.getElementById('f-flowers').value=c.flowers||'';
+      document.getElementById('f-resto').value=c.resto||'';
+      document.getElementById('f-platform').value=c.platform||'Instagram';
+      document.getElementById('f-mood').value=c.mood||'neutral';
+      document.getElementById('f-risk').value=c.risk||'low';
+      document.getElementById('f-notes').value=c.notes||'';
+      document.getElementById('f-gift').value=c.gift||'';
+    }
+  } else {
+    ['f-name','f-nick','f-bday','f-anni','f-first','f-food','f-flowers','f-resto','f-notes','f-gift'].forEach(id=>{document.getElementById(id).value=''});
+    document.getElementById('f-status').value='potential';
+    document.getElementById('f-platform').value='Instagram';
+    document.getElementById('f-mood').value='neutral';
+    document.getElementById('f-risk').value='low';
+  }
+  document.getElementById('modal-overlay').classList.add('show');
+}
+
+function closeModal(){document.getElementById('modal-overlay').classList.remove('show')}
+
+function saveContact(){
+  var name=document.getElementById('f-name').value.trim();
+  if(!name){alert('Name is required');return}
+  var c={
+    id:editingId||Date.now(),
+    name,nick:document.getElementById('f-nick').value.trim(),
+    status:document.getElementById('f-status').value,
+    bday:document.getElementById('f-bday').value,
+    anni:document.getElementById('f-anni').value,
+    first:document.getElementById('f-first').value,
+    food:document.getElementById('f-food').value.trim(),
+    flowers:document.getElementById('f-flowers').value.trim(),
+    resto:document.getElementById('f-resto').value.trim(),
+    platform:document.getElementById('f-platform').value,
+    mood:document.getElementById('f-mood').value,
+    risk:document.getElementById('f-risk').value,
+    notes:document.getElementById('f-notes').value.trim(),
+    gift:document.getElementById('f-gift').value.trim(),
+    ts:Date.now()
+  };
+  if(editingId){contacts=contacts.map(x=>x.id===editingId?c:x)}
+  else{contacts.push(c)}
+  save();closeModal();renderAll();
+  var cur=document.querySelector('.nav-item.active');
+  if(cur){var v=cur.getAttribute('onclick')?.match(/showView\('(\w+)'/);if(v)renderView(v[1])}
+}
+
+function editContact(id){openModal('edit',id)}
+function deleteContact(id){
+  if(confirm('Remove this contact?')){contacts=contacts.filter(c=>c.id!==id);save();renderAll();renderView('profiles')}
+}
+
+// ── HEALTH SCORE ──
+function calcHealth(c){
+  var score=100;
+  if(c.mood==='angry') score-=30;
+  else if(c.mood==='suspicious') score-=20;
+  else if(c.mood==='neutral') score-=5;
+  if(c.risk==='high') score-=25;
+  else if(c.risk==='medium') score-=12;
+  if(!c.bday) score-=5;
+  if(!c.gift) score-=8;
+  if(c.status==='churned') score=0;
+  score=Math.max(0,Math.min(100,score));
+  return score;
+}
+
+function healthColor(s){ return s>=75?'var(--green)':s>=45?'var(--amber)':'var(--red)'; }
+function healthLabel(s){ return s>=75?'Stable':s>=45?'Needs Attention':'Critical'; }
+
+function healthMeterHTML(c){
+  var s=calcHealth(c);
+  return `<div class="info-card" style="margin-bottom:16px">
+    <h3>Relationship Health</h3>
+    <div class="health-meter-wrap">
+      <div class="health-meter-top">
+        <span class="health-meter-label">Overall Health Score</span>
+        <span class="health-meter-val" style="color:${healthColor(s)}">${s}% ${healthLabel(s)}</span>
+      </div>
+      <div class="health-bar"><div class="health-bar-fill" style="width:${s}%;background:${healthColor(s)}"></div></div>
+      <div class="health-status" style="color:${healthColor(s)}">
+        ${s>=75?'✓ Relationship is healthy and stable':s>=45?'⚠ Some signals need attention':'🚨 High risk — take immediate action'}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── TIMELINE ──
+function buildTimeline(c){
+  var events=[];
+  if(c.first) events.push({date:c.first,text:'First date',icon:'💝'});
+  if(c.anni) events.push({date:c.anni,text:'Anniversary',icon:'💑'});
+  if(c.gift) events.push({date:new Date().toISOString().split('T')[0],text:'Gift logged — '+c.gift,icon:'🎁'});
+  if(c.mood==='suspicious') events.push({date:new Date(Date.now()-86400000*3).toISOString().split('T')[0],text:'Mood changed to Suspicious',icon:'🤨'});
+  if(c.mood==='angry') events.push({date:new Date(Date.now()-86400000*1).toISOString().split('T')[0],text:'Mood changed to Angry',icon:'😠'});
+  if(c.status==='relationship') events.push({date:c.anni||c.first||new Date().toISOString().split('T')[0],text:'Status changed to Official',icon:'💍'});
+  if(c.status==='churned') events.push({date:new Date(Date.now()-86400000*30).toISOString().split('T')[0],text:'Status changed to Churned',icon:'💔'});
+  events.push({date:new Date().toISOString().split('T')[0],text:'Profile last updated',icon:'📝'});
+  events.sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if(!events.length) return '';
+  return `<div class="info-card" style="margin-bottom:16px">
+    <h3 style="margin-bottom:14px">Timeline</h3>
+    <div class="timeline-list">
+      ${events.map(e=>`
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-date">${formatDate(e.date)}</div>
+          <div class="timeline-text">${e.icon} ${e.text}</div>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+// ── PROFILE VIEW ──
+function viewProfile(id){
+  var c=contacts.find(x=>x.id===id);if(!c)return;
+  var cGifts=gifts.filter(g=>g.personId===c.id);
+  document.getElementById('profile-modal-body').innerHTML=`
+    <div class="profile-hero">
+      <div class="profile-avatar">${c.name.charAt(0)}</div>
+      <div>
+        <div class="profile-name">${c.name}</div>
+        <div class="profile-nickname">${c.nick?'aka '+c.nick+' · ':''}</div>
+        <div style="display:flex;gap:8px;margin-top:8px;align-items:center">
+          ${statusBadge(c.status)}
+          ${moodBadge(c.mood)}
+          ${platformIcon(c.platform)}
+        </div>
+      </div>
+    </div>
+    ${healthMeterHTML(c)}
+    <div class="profile-grid">
+      <div class="info-card">
+        <h3>Important Dates</h3>
+        <div class="info-row"><span class="info-label">Birthday</span><span class="info-val">${formatDate(c.bday)}${c.bday&&daysUntil(c.bday)<=14?' 🎂 ('+daysUntil(c.bday)+'d)':''}</span></div>
+        <div class="info-row"><span class="info-label">Anniversary</span><span class="info-val">${c.anni?formatDate(c.anni):' — '}</span></div>
+        <div class="info-row"><span class="info-label">First Date</span><span class="info-val">${c.first?formatDate(c.first):' — '}</span></div>
+        <div class="info-row"><span class="info-label">Risk Level</span><span class="info-val">${riskBadge(c.risk)}</span></div>
+      </div>
+      <div class="info-card">
+        <h3>Preferences</h3>
+        <div class="info-row"><span class="info-label">Fav Food</span><span class="info-val">${c.food||' — '}</span></div>
+        <div class="info-row"><span class="info-label">Flowers</span><span class="info-val">${c.flowers||' — '}</span></div>
+        <div class="info-row"><span class="info-label">Restaurant</span><span class="info-val">${c.resto||' — '}</span></div>
+        <div class="info-row"><span class="info-label">Platform</span><span class="info-val">${platformIcon(c.platform)}</span></div>
+      </div>
+    </div>
+    ${c.notes?`<div class="info-card" style="margin-bottom:16px"><h3>Notes</h3><div class="notes-area">${c.notes}</div></div>`:''}
+    ${cGifts.length?`<div class="info-card" style="margin-bottom:16px"><h3>Gift History</h3>${cGifts.map(g=>`<div class="gift-item"><span class="gift-icon">🎁</span><div><div style="font-size:13px">${g.gift}</div><div style="font-size:11px;color:var(--muted)">${g.occasion} · ${formatDate(g.date)}</div></div></div>`).join('')}</div>`:''}
+    ${buildTimeline(c)}
+    <div style="display:flex;gap:10px;margin-top:4px">
+      <button onclick="editContact(${c.id});closeProfileModal()" style="flex:1;background:rgba(255,179,71,0.1);color:var(--amber);border:1px solid rgba(255,179,71,0.2);border-radius:8px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">✏️ Edit Profile</button>
+      <button onclick="closeProfileModal();showView('panic',document.querySelector('[onclick*=panic]'))" style="flex:1;background:rgba(255,71,87,0.1);color:var(--red);border:1px solid rgba(255,71,87,0.2);border-radius:8px;padding:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">🚨 Panic Mode</button>
+    </div>
+  `;
+  document.getElementById('profile-modal').classList.add('show');
+}
+function closeProfileModal(){document.getElementById('profile-modal').classList.remove('show')}
+
+// ── NOTIFICATION SYSTEM ──
+var notifRead = JSON.parse(localStorage.getItem('grm_notif_read')||'[]');
+
+function buildNotifications(){
+  var notifs=[];
+  contacts.forEach(c=>{
+    if(c.mood==='suspicious') notifs.push({id:'susp_'+c.id,icon:'⚠️',text:c.name+' has been suspicious for 3+ days',action:'Send a message today',time:'2h ago',urgent:true});
+    if(c.mood==='angry') notifs.push({id:'angry_'+c.id,icon:'🚨',text:c.name+' mood is Angry — risk escalating',action:'Open Panic Mode',time:'1h ago',urgent:true});
+    var bd=daysUntil(c.bday);
+    if(bd!==null&&bd<=7) notifs.push({id:'bday_'+c.id,icon:'🎂',text:c.name+"'s birthday in "+bd+(bd===1?' day':' days'),action:'Buy flowers',time:'Today',urgent:bd<=2});
+    var an=daysUntil(c.anni);
+    if(an!==null&&an<=7&&c.anni) notifs.push({id:'anni_'+c.id,icon:'💑',text:c.name+"'s anniversary in "+an+(an===1?' day':' days'),action:'Plan something special',time:'Today',urgent:an<=2});
+    if(c.risk==='high') notifs.push({id:'risk_'+c.id,icon:'📉',text:'High risk detected — '+c.name,action:'Review profile',time:'3h ago',urgent:false});
+  });
+  // Static ones
+  notifs.push({id:'conflict_fri',icon:'⚠️',text:'Conflict detected Friday night',action:'Emma and Sarah both scheduled',time:'5h ago',urgent:true});
+  notifs.push({id:'sla_breach',icon:'📉',text:'Response time SLA exceeded',action:'Average reply time now 4+ hours',time:'6h ago',urgent:false});
+  return notifs;
+}
+
+function renderNotifications(){
+  var notifs=buildNotifications();
+  var unread=notifs.filter(n=>!notifRead.includes(n.id));
+  var badge=document.getElementById('notif-badge');
+  var list=document.getElementById('notif-list');
+  if(!badge||!list) return;
+  badge.textContent=unread.length;
+  badge.style.display=unread.length>0?'flex':'none';
+  if(!notifs.length){ list.innerHTML='<div class="notif-empty">🎉 All clear — no alerts right now</div>'; return; }
+  list.innerHTML=notifs.map(n=>`
+    <div class="notif-item${!notifRead.includes(n.id)?' unread':''}" onclick="readNotif('${n.id}')">
+      <span class="notif-icon">${n.icon}</span>
+      <div class="notif-content">
+        <div class="notif-text">${n.text}</div>
+        <div class="notif-action">→ ${n.action}</div>
+        <div class="notif-time">${n.time}</div>
+      </div>
+      ${!notifRead.includes(n.id)?'<span class="notif-unread-dot"></span>':''}
+    </div>`).join('');
+}
+
+function toggleNotif(){
+  var dd=document.getElementById('notif-dropdown');
+  dd.classList.toggle('open');
+  if(dd.classList.contains('open')) renderNotifications();
+}
+
+function readNotif(id){
+  if(!notifRead.includes(id)) notifRead.push(id);
+  localStorage.setItem('grm_notif_read',JSON.stringify(notifRead));
+  renderNotifications();
+}
+
+function markAllRead(){
+  var notifs=buildNotifications();
+  notifs.forEach(n=>{ if(!notifRead.includes(n.id)) notifRead.push(n.id); });
+  localStorage.setItem('grm_notif_read',JSON.stringify(notifRead));
+  renderNotifications();
+}
+
+// Close notif dropdown when clicking outside
+document.addEventListener('click',function(e){
+  var wrap=document.getElementById('notif-wrap');
+  if(wrap&&!wrap.contains(e.target)){
+    var dd=document.getElementById('notif-dropdown');
+    if(dd) dd.classList.remove('open');
+  }
+});
+
+// Update suspicion AI card based on live data
+function renderSuspicionAI(){
+  var highMood=contacts.filter(c=>c.mood==='suspicious'||c.mood==='angry');
+  var highRisk=contacts.filter(c=>c.risk==='high');
+  var level = highMood.length>=2||highRisk.length>=2 ? 'HIGH' : highMood.length===1||highRisk.length===1 ? 'MEDIUM' : 'LOW';
+  var badge=document.getElementById('suspicion-level-badge');
+  var rec=document.getElementById('suspicion-rec-text');
+  if(!badge) return;
+  badge.className='suspicion-level '+(level==='HIGH'?'sl-high':level==='MEDIUM'?'sl-medium':'sl-low');
+  badge.textContent=level;
+  if(rec){
+    rec.textContent = level==='HIGH'
+      ? 'Send apology message + schedule dinner this week'
+      : level==='MEDIUM'
+      ? 'Check in with a thoughtful message today'
+      : 'All signals nominal — keep maintaining momentum';
+  }
+}
+
+// ── GIFT MODAL ──
+function populateGiftPersonSelect(){
+  var sel=document.getElementById('gf-person');
+  sel.innerHTML=contacts.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+}
+function openGiftModal(){
+  document.getElementById('gf-gift').value='';
+  document.getElementById('gf-date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('gf-occasion').value='';
+  document.getElementById('gift-modal').classList.add('show');
+}
+function closeGiftModal(){document.getElementById('gift-modal').classList.remove('show')}
+function saveGift(){
+  var pid=parseInt(document.getElementById('gf-person').value);
+  var gift=document.getElementById('gf-gift').value.trim();
+  if(!gift){alert('Please enter a gift');return}
+  gifts.push({id:Date.now(),personId:pid,gift,date:document.getElementById('gf-date').value,occasion:document.getElementById('gf-occasion').value.trim()||'Gift'});
+  save();closeGiftModal();renderGifts();
+}
+
+// Close modals on overlay click
+document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)closeModal()});
+document.getElementById('profile-modal').addEventListener('click',function(e){if(e.target===this)closeProfileModal()});
+document.getElementById('gift-modal').addEventListener('click',function(e){if(e.target===this)closeGiftModal()});
+
+// FAQ toggle
+function toggleFaq(el){
+  var isOpen=el.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(f=>f.classList.remove('open'));
+  if(!isOpen) el.classList.add('open');
+}
+
+// ── INIT — check session on load ──
+(function init(){
+  if(currentUser){
+    enterDashboard();
+  } else {
+    showLanding();
+  }
+})();
+</script>
+</body>
+</html>
